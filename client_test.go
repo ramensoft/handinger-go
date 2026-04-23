@@ -41,7 +41,7 @@ func TestUserAgentHeader(t *testing.T) {
 	)
 	_, _ = client.Workers.New(context.Background(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if userAgent != fmt.Sprintf("Handinger/Go %s", internal.PackageVersion) {
@@ -69,7 +69,7 @@ func TestRetryAfter(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -108,7 +108,7 @@ func TestDeleteRetryCountHeader(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -142,7 +142,7 @@ func TestOverwriteRetryCountHeader(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -175,7 +175,7 @@ func TestRetryAfterMs(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -202,7 +202,7 @@ func TestContextCancel(t *testing.T) {
 	cancel()
 	_, err := client.Workers.New(cancelCtx, handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -226,7 +226,7 @@ func TestContextCancelDelay(t *testing.T) {
 	defer cancel()
 	_, err := client.Workers.New(cancelCtx, handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err == nil {
@@ -256,7 +256,7 @@ func TestContextDeadline(t *testing.T) {
 		)
 		_, err := client.Workers.New(deadlineCtx, handinger.WorkerNewParams{
 			CreateWorker: handinger.CreateWorkerParam{
-				Input: "x",
+				Input: "What's the weather today in Barcelona?",
 			},
 		})
 		if err == nil {

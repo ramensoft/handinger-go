@@ -27,7 +27,7 @@ func TestUsage(t *testing.T) {
 	)
 	worker, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err != nil {
