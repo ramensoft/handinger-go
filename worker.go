@@ -10,14 +10,14 @@ import (
 	"net/url"
 	"slices"
 
-	"github.com/stainless-sdks/handinger-go/internal/apijson"
-	"github.com/stainless-sdks/handinger-go/internal/apiquery"
-	shimjson "github.com/stainless-sdks/handinger-go/internal/encoding/json"
-	"github.com/stainless-sdks/handinger-go/internal/requestconfig"
-	"github.com/stainless-sdks/handinger-go/option"
-	"github.com/stainless-sdks/handinger-go/packages/param"
-	"github.com/stainless-sdks/handinger-go/packages/respjson"
-	"github.com/stainless-sdks/handinger-go/packages/ssestream"
+	"github.com/Ramensoft/handinger-go/internal/apijson"
+	"github.com/Ramensoft/handinger-go/internal/apiquery"
+	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
+	"github.com/Ramensoft/handinger-go/internal/requestconfig"
+	"github.com/Ramensoft/handinger-go/option"
+	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/packages/ssestream"
 )
 
 // WorkerService contains methods and other services that help with interacting
