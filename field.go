@@ -1,7 +1,7 @@
 package handinger
 
 import (
-	"github.com/stainless-sdks/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/param"
 	"io"
 	"time"
 )

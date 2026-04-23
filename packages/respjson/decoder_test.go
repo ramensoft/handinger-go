@@ -3,8 +3,8 @@ package respjson_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stainless-sdks/handinger-go/internal/apijson"
-	rj "github.com/stainless-sdks/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/internal/apijson"
+	rj "github.com/Ramensoft/handinger-go/packages/respjson"
 	"reflect"
 	"testing"
 )

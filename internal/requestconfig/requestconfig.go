@@ -18,10 +18,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stainless-sdks/handinger-go/internal"
-	"github.com/stainless-sdks/handinger-go/internal/apierror"
-	"github.com/stainless-sdks/handinger-go/internal/apiform"
-	"github.com/stainless-sdks/handinger-go/internal/apiquery"
+	"github.com/Ramensoft/handinger-go/internal"
+	"github.com/Ramensoft/handinger-go/internal/apierror"
+	"github.com/Ramensoft/handinger-go/internal/apiform"
+	"github.com/Ramensoft/handinger-go/internal/apiquery"
 )
 
 func getDefaultHeaders() map[string]string {

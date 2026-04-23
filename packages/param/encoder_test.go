@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stainless-sdks/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/param"
 )
 
 type Struct struct {

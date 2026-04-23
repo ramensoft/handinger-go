@@ -2,7 +2,7 @@
 package json
 
 import (
-	"github.com/stainless-sdks/handinger-go/internal/encoding/json/shims"
+	"github.com/Ramensoft/handinger-go/internal/encoding/json/shims"
 	"reflect"
 	"time"
 )

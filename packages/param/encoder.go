@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	shimjson "github.com/stainless-sdks/handinger-go/internal/encoding/json"
+	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
 
 	"github.com/tidwall/sjson"
 )

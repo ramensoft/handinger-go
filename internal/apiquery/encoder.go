@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stainless-sdks/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/param"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc

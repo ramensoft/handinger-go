@@ -12,11 +12,11 @@ import (
 	"slices"
 	"time"
 
-	"github.com/stainless-sdks/handinger-go/internal/apijson"
-	"github.com/stainless-sdks/handinger-go/internal/requestconfig"
-	"github.com/stainless-sdks/handinger-go/option"
-	"github.com/stainless-sdks/handinger-go/packages/param"
-	"github.com/stainless-sdks/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/internal/apijson"
+	"github.com/Ramensoft/handinger-go/internal/requestconfig"
+	"github.com/Ramensoft/handinger-go/option"
+	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/respjson"
 )
 
 // Manage future and recurring worker tasks.

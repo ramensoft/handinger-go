@@ -3,7 +3,7 @@
 package constant
 
 import (
-	shimjson "github.com/stainless-sdks/handinger-go/internal/encoding/json"
+	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
 )
 
 type Constant[T any] interface {
