@@ -329,6 +329,7 @@ type WorkerUsage struct {
 	Steps            int64   `json:"steps" api:"required"`
 	TotalTokens      int64   `json:"totalTokens" api:"required"`
 	Credits          int64   `json:"credits"`
+	DurationMs       int64   `json:"durationMs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		CacheReadTokens  respjson.Field
@@ -340,6 +341,7 @@ type WorkerUsage struct {
 		Steps            respjson.Field
 		TotalTokens      respjson.Field
 		Credits          respjson.Field
+		DurationMs       respjson.Field
 		ExtraFields      map[string]respjson.Field
 		raw              string
 	} `json:"-"`
