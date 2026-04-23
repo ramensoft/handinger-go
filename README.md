@@ -58,7 +58,7 @@ func main() {
 	)
 	worker, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err != nil {
@@ -303,7 +303,7 @@ To handle errors, we recommend that you use the `errors.As` pattern:
 ```go
 _, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 	CreateWorker: handinger.CreateWorkerParam{
-		Input: "x",
+		Input: "What's the weather today in Barcelona?",
 	},
 })
 if err != nil {
@@ -334,7 +334,7 @@ client.Workers.New(
 	ctx,
 	handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	// This sets the per-retry timeout
@@ -374,7 +374,7 @@ client.Workers.New(
 	context.TODO(),
 	handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	option.WithMaxRetries(5),
@@ -393,7 +393,7 @@ worker, err := client.Workers.New(
 	context.TODO(),
 	handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input: "x",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	option.WithResponseInto(&response),

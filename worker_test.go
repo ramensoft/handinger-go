@@ -32,7 +32,7 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Input:  "x",
+			Input:  "What's the weather today in Barcelona?",
 			Budget: handinger.CreateWorkerBudgetLow,
 			Stream: handinger.Bool(true),
 		},
@@ -93,7 +93,7 @@ func TestWorkerContinueWithOptionalParams(t *testing.T) {
 		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		handinger.WorkerContinueParams{
 			CreateWorker: handinger.CreateWorkerParam{
-				Input:  "x",
+				Input:  "What's the weather today in Barcelona?",
 				Budget: handinger.CreateWorkerBudgetLow,
 				Stream: handinger.Bool(true),
 			},
