@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stainless-sdks/handinger-go"
-	"github.com/stainless-sdks/handinger-go/internal/testutil"
-	"github.com/stainless-sdks/handinger-go/option"
+	"github.com/Ramensoft/handinger-go"
+	"github.com/Ramensoft/handinger-go/internal/testutil"
+	"github.com/Ramensoft/handinger-go/option"
 )
 
 func TestUsage(t *testing.T) {

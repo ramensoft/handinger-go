@@ -1,4 +1,4 @@
-module github.com/stainless-sdks/handinger-go
+module github.com/Ramensoft/handinger-go
 
 go 1.22
 

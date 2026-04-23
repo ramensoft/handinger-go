@@ -1,8 +1,8 @@
 package sentinel_test
 
 import (
-	"github.com/stainless-sdks/handinger-go/internal/encoding/json/sentinel"
-	"github.com/stainless-sdks/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/internal/encoding/json/sentinel"
+	"github.com/Ramensoft/handinger-go/packages/param"
 	"reflect"
 	"slices"
 	"testing"

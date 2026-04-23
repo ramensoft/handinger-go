@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stainless-sdks/handinger-go"
-	"github.com/stainless-sdks/handinger-go/internal"
-	"github.com/stainless-sdks/handinger-go/option"
+	"github.com/Ramensoft/handinger-go"
+	"github.com/Ramensoft/handinger-go/internal"
+	"github.com/Ramensoft/handinger-go/option"
 )
 
 type closureTransport struct {

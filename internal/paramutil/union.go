@@ -2,7 +2,7 @@ package paramutil
 
 import (
 	"fmt"
-	"github.com/stainless-sdks/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/param"
 	"reflect"
 )
 

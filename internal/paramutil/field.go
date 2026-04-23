@@ -1,8 +1,8 @@
 package paramutil
 
 import (
-	"github.com/stainless-sdks/handinger-go/packages/param"
-	"github.com/stainless-sdks/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/respjson"
 )
 
 func AddrIfPresent[T comparable](v param.Opt[T]) *T {
