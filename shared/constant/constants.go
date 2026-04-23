@@ -18,6 +18,21 @@ func ValueOf[T Constant[T]]() T {
 	return t.Default()
 }
 
+type Cron string      // Always "cron"
+type Delayed string   // Always "delayed"
+type Interval string  // Always "interval"
+type Scheduled string // Always "scheduled"
+
+func (c Cron) Default() Cron           { return "cron" }
+func (c Delayed) Default() Delayed     { return "delayed" }
+func (c Interval) Default() Interval   { return "interval" }
+func (c Scheduled) Default() Scheduled { return "scheduled" }
+
+func (c Cron) MarshalJSON() ([]byte, error)      { return marshalString(c) }
+func (c Delayed) MarshalJSON() ([]byte, error)   { return marshalString(c) }
+func (c Interval) MarshalJSON() ([]byte, error)  { return marshalString(c) }
+func (c Scheduled) MarshalJSON() ([]byte, error) { return marshalString(c) }
+
 type constant[T any] interface {
 	Constant[T]
 	*T

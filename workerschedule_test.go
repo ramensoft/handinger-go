@@ -33,9 +33,8 @@ func TestWorkerScheduleNewWithOptionalParams(t *testing.T) {
 		handinger.WorkerScheduleNewParams{
 			Input: "x",
 			When: handinger.WorkerScheduleNewParamsWhenUnion{
-				OfWorkerScheduleNewsWhenObject: &handinger.WorkerScheduleNewParamsWhenObject{
+				OfScheduled: &handinger.WorkerScheduleNewParamsWhenScheduled{
 					Date: time.Now(),
-					Type: "scheduled",
 				},
 			},
 			Budget: handinger.WorkerScheduleNewParamsBudgetLow,
