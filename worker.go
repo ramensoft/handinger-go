@@ -11,13 +11,11 @@ import (
 	"slices"
 
 	"github.com/Ramensoft/handinger-go/internal/apijson"
-	"github.com/Ramensoft/handinger-go/internal/apiquery"
 	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
 	"github.com/Ramensoft/handinger-go/internal/requestconfig"
 	"github.com/Ramensoft/handinger-go/option"
 	"github.com/Ramensoft/handinger-go/packages/param"
 	"github.com/Ramensoft/handinger-go/packages/respjson"
-	"github.com/Ramensoft/handinger-go/packages/ssestream"
 )
 
 // WorkerService contains methods and other services that help with interacting
@@ -50,16 +48,15 @@ func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...o
 	return res, err
 }
 
-// Retrieve the current worker state. Pass stream=true or request text/event-stream
-// to subscribe to updates.
-func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGetParams, opts ...option.RequestOption) (res *Worker, err error) {
+// Retrieve the current worker state and messages.
+func (r *WorkerService) Get(ctx context.Context, workerID string, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
 		err = errors.New("missing required workerId parameter")
 		return nil, err
 	}
 	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return res, err
 }
 
@@ -105,23 +102,6 @@ func (r *WorkerService) GetFile(ctx context.Context, filePath string, query Work
 	return res, err
 }
 
-// Subscribe to a worker using server-sent events.
-func (r *WorkerService) StreamUpdatesStreaming(ctx context.Context, workerID string, opts ...option.RequestOption) (stream *ssestream.Stream[string]) {
-	var (
-		raw *http.Response
-		err error
-	)
-	opts = slices.Concat(r.options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/event-stream")}, opts...)
-	if workerID == "" {
-		err = errors.New("missing required workerId parameter")
-		return ssestream.NewStream[string](nil, err)
-	}
-	path := fmt.Sprintf("api/workers/%s/stream", url.PathEscape(workerID))
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &raw, opts...)
-	return ssestream.NewStream[string](ssestream.NewDecoder(raw), err)
-}
-
 // The property Input is required.
 type CreateWorkerParam struct {
 	Input  string          `json:"input" api:"required"`
@@ -164,7 +144,6 @@ type Worker struct {
 	Sources    []WorkerSource `json:"sources" api:"required"`
 	// Any of "running", "completed", "pending".
 	Status WorkerStatus `json:"status" api:"required"`
-	Costs  WorkerCosts  `json:"costs" api:"nullable"`
 	Usage  WorkerUsage  `json:"usage"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
@@ -181,7 +160,6 @@ type Worker struct {
 		Running           respjson.Field
 		Sources           respjson.Field
 		Status            respjson.Field
-		Costs             respjson.Field
 		Usage             respjson.Field
 		ExtraFields       map[string]respjson.Field
 		raw               string
@@ -297,53 +275,15 @@ const (
 	WorkerStatusPending   WorkerStatus = "pending"
 )
 
-type WorkerCosts struct {
-	InternalCostUsd float64 `json:"internalCostUsd" api:"required"`
-	ModelCostUsd    float64 `json:"modelCostUsd" api:"required"`
-	SandboxCostUsd  float64 `json:"sandboxCostUsd" api:"required"`
-	ToolCostUsd     float64 `json:"toolCostUsd" api:"required"`
-	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
-	JSON struct {
-		InternalCostUsd respjson.Field
-		ModelCostUsd    respjson.Field
-		SandboxCostUsd  respjson.Field
-		ToolCostUsd     respjson.Field
-		ExtraFields     map[string]respjson.Field
-		raw             string
-	} `json:"-"`
-}
-
-// Returns the unmodified JSON received from the API
-func (r WorkerCosts) RawJSON() string { return r.JSON.raw }
-func (r *WorkerCosts) UnmarshalJSON(data []byte) error {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type WorkerUsage struct {
-	CacheReadTokens  int64   `json:"cacheReadTokens" api:"required"`
-	CacheWriteTokens int64   `json:"cacheWriteTokens" api:"required"`
-	CostUsd          float64 `json:"costUsd" api:"required"`
-	InputTokens      int64   `json:"inputTokens" api:"required"`
-	OutputTokens     int64   `json:"outputTokens" api:"required"`
-	ReasoningTokens  int64   `json:"reasoningTokens" api:"required"`
-	Steps            int64   `json:"steps" api:"required"`
-	TotalTokens      int64   `json:"totalTokens" api:"required"`
-	Credits          int64   `json:"credits"`
-	DurationMs       int64   `json:"durationMs"`
+	Credits    int64 `json:"credits"`
+	DurationMs int64 `json:"durationMs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
-		CacheReadTokens  respjson.Field
-		CacheWriteTokens respjson.Field
-		CostUsd          respjson.Field
-		InputTokens      respjson.Field
-		OutputTokens     respjson.Field
-		ReasoningTokens  respjson.Field
-		Steps            respjson.Field
-		TotalTokens      respjson.Field
-		Credits          respjson.Field
-		DurationMs       respjson.Field
-		ExtraFields      map[string]respjson.Field
-		raw              string
+		Credits     respjson.Field
+		DurationMs  respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
 	} `json:"-"`
 }
 
@@ -363,20 +303,6 @@ func (r WorkerNewParams) MarshalJSON() (data []byte, err error) {
 }
 func (r *WorkerNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
-}
-
-type WorkerGetParams struct {
-	// Return a server-sent event stream instead of JSON.
-	Stream param.Opt[bool] `query:"stream,omitzero" json:"-"`
-	paramObj
-}
-
-// URLQuery serializes [WorkerGetParams]'s query parameters as `url.Values`.
-func (r WorkerGetParams) URLQuery() (v url.Values, err error) {
-	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
-		ArrayFormat:  apiquery.ArrayQueryFormatComma,
-		NestedFormat: apiquery.NestedQueryFormatBrackets,
-	})
 }
 
 type WorkerContinueParams struct {
