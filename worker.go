@@ -11,6 +11,7 @@ import (
 	"slices"
 
 	"github.com/Ramensoft/handinger-go/internal/apijson"
+	"github.com/Ramensoft/handinger-go/internal/apiquery"
 	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
 	"github.com/Ramensoft/handinger-go/internal/requestconfig"
 	"github.com/Ramensoft/handinger-go/option"
@@ -18,6 +19,8 @@ import (
 	"github.com/Ramensoft/handinger-go/packages/respjson"
 )
 
+// Create, retrieve, and continue agent workers.
+//
 // WorkerService contains methods and other services that help with interacting
 // with the handinger API.
 //
@@ -40,7 +43,9 @@ func NewWorkerService(opts ...option.RequestOption) (r WorkerService) {
 	return
 }
 
-// Create a new agent worker and start it with the supplied instruction.
+// Create a new agent worker and start it with the supplied instruction. Send
+// `multipart/form-data` to attach files alongside the instruction; the bytes are
+// bootstrapped into the worker's workspace before the first turn.
 func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/workers"
@@ -48,19 +53,22 @@ func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...o
 	return res, err
 }
 
-// Retrieve the current worker state and messages.
-func (r *WorkerService) Get(ctx context.Context, workerID string, opts ...option.RequestOption) (res *Worker, err error) {
+// Retrieve the current worker state and messages. Returns a JSON worker object by
+// default, or a server-sent event stream when `stream=true`.
+func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGetParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
 		err = errors.New("missing required workerId parameter")
 		return nil, err
 	}
 	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return res, err
 }
 
-// Send another instruction to an existing worker.
+// Send another instruction to an existing worker. Send `multipart/form-data` to
+// attach additional files; the bytes are bootstrapped into the worker's workspace
+// before the next turn.
 func (r *WorkerService) Continue(ctx context.Context, workerID string, body WorkerContinueParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
@@ -80,24 +88,6 @@ func (r *WorkerService) GetEmail(ctx context.Context, workerID string, opts ...o
 		return nil, err
 	}
 	path := fmt.Sprintf("api/workers/%s/email", url.PathEscape(workerID))
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return res, err
-}
-
-// Retrieve a file published from a worker workspace. The runtime route accepts
-// nested paths after /files/.
-func (r *WorkerService) GetFile(ctx context.Context, filePath string, query WorkerGetFileParams, opts ...option.RequestOption) (res *http.Response, err error) {
-	opts = slices.Concat(r.options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "application/octet-stream")}, opts...)
-	if query.WorkerID == "" {
-		err = errors.New("missing required workerId parameter")
-		return nil, err
-	}
-	if filePath == "" {
-		err = errors.New("missing required filePath parameter")
-		return nil, err
-	}
-	path := fmt.Sprintf("api/workers/%s/files/%s", url.PathEscape(query.WorkerID), url.PathEscape(filePath))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return res, err
 }
@@ -305,6 +295,34 @@ func (r *WorkerNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type WorkerGetParams struct {
+	// Set to "true" to receive a server-sent event stream that replays all stored
+	// messages and then continues with live chunks from the active turn (if any)
+	// before closing.
+	//
+	// Any of "true", "false".
+	Stream WorkerGetParamsStream `query:"stream,omitzero" json:"-"`
+	paramObj
+}
+
+// URLQuery serializes [WorkerGetParams]'s query parameters as `url.Values`.
+func (r WorkerGetParams) URLQuery() (v url.Values, err error) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
+}
+
+// Set to "true" to receive a server-sent event stream that replays all stored
+// messages and then continues with live chunks from the active turn (if any)
+// before closing.
+type WorkerGetParamsStream string
+
+const (
+	WorkerGetParamsStreamTrue  WorkerGetParamsStream = "true"
+	WorkerGetParamsStreamFalse WorkerGetParamsStream = "false"
+)
+
 type WorkerContinueParams struct {
 	CreateWorker CreateWorkerParam
 	paramObj
@@ -315,9 +333,4 @@ func (r WorkerContinueParams) MarshalJSON() (data []byte, err error) {
 }
 func (r *WorkerContinueParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
-}
-
-type WorkerGetFileParams struct {
-	WorkerID string `path:"workerId" api:"required" json:"-"`
-	paramObj
 }
