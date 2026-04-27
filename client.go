@@ -17,6 +17,7 @@ import (
 // directly, and instead use the [NewClient] method instead.
 type Client struct {
 	options []option.RequestOption
+	// Create, retrieve, and continue agent workers.
 	Workers WorkerService
 }
 
