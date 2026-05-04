@@ -38,9 +38,12 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	_, _ = client.Workers.New(context.Background(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, _ = client.Tasks.New(context.Background(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if userAgent != fmt.Sprintf("Handinger/Go %s", internal.PackageVersion) {
@@ -66,9 +69,12 @@ func TestRetryAfter(t *testing.T) {
 			},
 		}),
 	)
-	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -105,9 +111,12 @@ func TestDeleteRetryCountHeader(t *testing.T) {
 		}),
 		option.WithHeaderDel("X-Stainless-Retry-Count"),
 	)
-	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -139,9 +148,12 @@ func TestOverwriteRetryCountHeader(t *testing.T) {
 		}),
 		option.WithHeader("X-Stainless-Retry-Count", "42"),
 	)
-	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -172,9 +184,12 @@ func TestRetryAfterMs(t *testing.T) {
 			},
 		}),
 	)
-	_, err := client.Workers.New(context.Background(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -199,9 +214,12 @@ func TestContextCancel(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
-	_, err := client.Workers.New(cancelCtx, handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(cancelCtx, handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -223,9 +241,12 @@ func TestContextCancelDelay(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithTimeout(context.Background(), 2*time.Millisecond)
 	defer cancel()
-	_, err := client.Workers.New(cancelCtx, handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	_, err := client.Tasks.New(cancelCtx, handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -253,9 +274,12 @@ func TestContextDeadline(t *testing.T) {
 				},
 			}),
 		)
-		_, err := client.Workers.New(deadlineCtx, handinger.WorkerNewParams{
-			CreateWorker: handinger.CreateWorkerParam{
-				Input: "What's the weather today in Barcelona?",
+		_, err := client.Tasks.New(deadlineCtx, handinger.TaskNewParams{
+			CreateTask: handinger.CreateTaskParam{
+				CreateWorkerParam: handinger.CreateWorkerParam{
+					Title: "Brand voice analyzer",
+				},
+				WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 			},
 		})
 		if err == nil {

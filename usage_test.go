@@ -25,9 +25,12 @@ func TestUsage(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	worker, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err != nil {

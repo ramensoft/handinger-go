@@ -18,8 +18,10 @@ import (
 // directly, and instead use the [NewClient] method instead.
 type Client struct {
 	options []option.RequestOption
-	// Create, retrieve, and continue agent workers.
+	// Create, retrieve, and manage agent worker templates.
 	Workers WorkerService
+	// Run and inspect tasks against a worker.
+	Tasks TaskService
 }
 
 // DefaultClientOptions read from the environment (HANDINGER_API_KEY,
@@ -53,6 +55,7 @@ func NewClient(opts ...option.RequestOption) (r Client) {
 	r = Client{options: opts}
 
 	r.Workers = NewWorkerService(opts...)
+	r.Tasks = NewTaskService(opts...)
 
 	return
 }
