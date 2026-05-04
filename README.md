@@ -56,9 +56,12 @@ func main() {
 	client := handinger.NewClient(
 		option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("HANDINGER_API_KEY")
 	)
-	worker, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err != nil {
@@ -270,7 +273,7 @@ client := handinger.NewClient(
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
 
-client.Workers.New(context.TODO(), ...,
+client.Tasks.New(context.TODO(), ...,
 	// Override the header
 	option.WithHeader("X-Some-Header", "some_other_custom_header_info"),
 	// Add an undocumented field to the request body, using sjson syntax
@@ -301,9 +304,12 @@ When the API returns a non-success status code, we return an error with type
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
-	CreateWorker: handinger.CreateWorkerParam{
-		Input: "What's the weather today in Barcelona?",
+_, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+	CreateTask: handinger.CreateTaskParam{
+		CreateWorkerParam: handinger.CreateWorkerParam{
+			Title: "Brand voice analyzer",
+		},
+		WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 	},
 })
 if err != nil {
@@ -312,7 +318,7 @@ if err != nil {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
 	}
-	panic(err.Error()) // GET "/api/workers": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/api/tasks": 400 Bad Request { ... }
 }
 ```
 
@@ -330,11 +336,14 @@ To set a per-retry timeout, use `option.WithRequestTimeout()`.
 // This sets the timeout for the request, including all the retries.
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
-client.Workers.New(
+client.Tasks.New(
 	ctx,
-	handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	},
 	// This sets the per-retry timeout
@@ -370,11 +379,14 @@ client := handinger.NewClient(
 )
 
 // Override per-request:
-client.Workers.New(
+client.Tasks.New(
 	context.TODO(),
-	handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	},
 	option.WithMaxRetries(5),
@@ -389,11 +401,14 @@ you need to examine response headers, status codes, or other details.
 ```go
 // Create a variable to store the HTTP response
 var response *http.Response
-worker, err := client.Workers.New(
+worker, err := client.Tasks.New(
 	context.TODO(),
-	handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Input: "What's the weather today in Barcelona?",
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			CreateWorkerParam: handinger.CreateWorkerParam{
+				Title: "Brand voice analyzer",
+			},
+			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	},
 	option.WithResponseInto(&response),

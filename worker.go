@@ -19,7 +19,7 @@ import (
 	"github.com/Ramensoft/handinger-go/packages/respjson"
 )
 
-// Create, retrieve, and continue agent workers.
+// Create, retrieve, and manage agent worker templates.
 //
 // WorkerService contains methods and other services that help with interacting
 // with the handinger API.
@@ -43,18 +43,18 @@ func NewWorkerService(opts ...option.RequestOption) (r WorkerService) {
 	return
 }
 
-// Create a new agent worker and start it with the supplied instruction. Send
-// `multipart/form-data` to attach files alongside the instruction; the bytes are
-// bootstrapped into the worker's workspace before the first turn.
-func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *Worker, err error) {
+// Create a new worker. The worker is a reusable agent template; tasks are runs
+// against this template. Use `POST /tasks` to actually run the agent.
+func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *WorkerNewResponse, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/workers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return res, err
 }
 
-// Retrieve the current worker state and messages. Returns a JSON worker object by
-// default, or a server-sent event stream when `stream=true`.
+// Retrieve the current worker state and messages from its most recent task.
+// Returns a JSON worker object by default, or a server-sent event stream when
+// `stream=true`.
 func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGetParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
@@ -63,20 +63,6 @@ func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGe
 	}
 	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return res, err
-}
-
-// Send another instruction to an existing worker. Send `multipart/form-data` to
-// attach additional files; the bytes are bootstrapped into the worker's workspace
-// before the next turn.
-func (r *WorkerService) Continue(ctx context.Context, workerID string, body WorkerContinueParams, opts ...option.RequestOption) (res *Worker, err error) {
-	opts = slices.Concat(r.options, opts)
-	if workerID == "" {
-		err = errors.New("missing required workerId parameter")
-		return nil, err
-	}
-	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return res, err
 }
 
@@ -92,12 +78,16 @@ func (r *WorkerService) GetEmail(ctx context.Context, workerID string, opts ...o
 	return res, err
 }
 
-// The property Input is required.
+// The property Title is required.
 type CreateWorkerParam struct {
-	Input  string          `json:"input" api:"required"`
-	Stream param.Opt[bool] `json:"stream,omitzero"`
-	// Any of "low", "standard", "high", "unlimited".
-	Budget CreateWorkerBudget `json:"budget,omitzero"`
+	Title string `json:"title" api:"required"`
+	// Persistent system prompt the worker uses for every task it runs.
+	Instructions param.Opt[string] `json:"instructions,omitzero"`
+	// `public` (default) is visible to all org members. `private` is only visible to
+	// invited members.
+	//
+	// Any of "public", "private".
+	Visibility CreateWorkerVisibility `json:"visibility,omitzero"`
 	paramObj
 }
 
@@ -109,13 +99,13 @@ func (r *CreateWorkerParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CreateWorkerBudget string
+// `public` (default) is visible to all org members. `private` is only visible to
+// invited members.
+type CreateWorkerVisibility string
 
 const (
-	CreateWorkerBudgetLow       CreateWorkerBudget = "low"
-	CreateWorkerBudgetStandard  CreateWorkerBudget = "standard"
-	CreateWorkerBudgetHigh      CreateWorkerBudget = "high"
-	CreateWorkerBudgetUnlimited CreateWorkerBudget = "unlimited"
+	CreateWorkerVisibilityPublic  CreateWorkerVisibility = "public"
+	CreateWorkerVisibilityPrivate CreateWorkerVisibility = "private"
 )
 
 type Worker struct {
@@ -283,6 +273,44 @@ func (r *WorkerUsage) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type WorkerNewResponse struct {
+	ID             string `json:"id" api:"required"`
+	CreatedAt      string `json:"createdAt" api:"required"`
+	Instructions   string `json:"instructions" api:"required"`
+	OrganizationID string `json:"organizationId" api:"required"`
+	Title          string `json:"title" api:"required"`
+	UpdatedAt      string `json:"updatedAt" api:"required"`
+	UserID         string `json:"userId" api:"required"`
+	// Any of "public", "private".
+	Visibility WorkerNewResponseVisibility `json:"visibility" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		ID             respjson.Field
+		CreatedAt      respjson.Field
+		Instructions   respjson.Field
+		OrganizationID respjson.Field
+		Title          respjson.Field
+		UpdatedAt      respjson.Field
+		UserID         respjson.Field
+		Visibility     respjson.Field
+		ExtraFields    map[string]respjson.Field
+		raw            string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r WorkerNewResponse) RawJSON() string { return r.JSON.raw }
+func (r *WorkerNewResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type WorkerNewResponseVisibility string
+
+const (
+	WorkerNewResponseVisibilityPublic  WorkerNewResponseVisibility = "public"
+	WorkerNewResponseVisibilityPrivate WorkerNewResponseVisibility = "private"
+)
+
 type WorkerNewParams struct {
 	CreateWorker CreateWorkerParam
 	paramObj
@@ -297,7 +325,7 @@ func (r *WorkerNewParams) UnmarshalJSON(data []byte) error {
 
 type WorkerGetParams struct {
 	// Set to "true" to receive a server-sent event stream that replays all stored
-	// messages and then continues with live chunks from the active turn (if any)
+	// messages and then continues with live chunks from the active task (if any)
 	// before closing.
 	//
 	// Any of "true", "false".
@@ -314,7 +342,7 @@ func (r WorkerGetParams) URLQuery() (v url.Values, err error) {
 }
 
 // Set to "true" to receive a server-sent event stream that replays all stored
-// messages and then continues with live chunks from the active turn (if any)
+// messages and then continues with live chunks from the active task (if any)
 // before closing.
 type WorkerGetParamsStream string
 
@@ -322,15 +350,3 @@ const (
 	WorkerGetParamsStreamTrue  WorkerGetParamsStream = "true"
 	WorkerGetParamsStreamFalse WorkerGetParamsStream = "false"
 )
-
-type WorkerContinueParams struct {
-	CreateWorker CreateWorkerParam
-	paramObj
-}
-
-func (r WorkerContinueParams) MarshalJSON() (data []byte, err error) {
-	return shimjson.Marshal(r.CreateWorker)
-}
-func (r *WorkerContinueParams) UnmarshalJSON(data []byte) error {
-	return apijson.UnmarshalRoot(data, r)
-}
