@@ -1,0 +1,221 @@
+// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
+
+package handinger
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"slices"
+
+	"github.com/Ramensoft/handinger-go/internal/apijson"
+	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
+	"github.com/Ramensoft/handinger-go/internal/requestconfig"
+	"github.com/Ramensoft/handinger-go/option"
+	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/Ramensoft/handinger-go/packages/respjson"
+)
+
+// Run and inspect tasks against a worker.
+//
+// TaskService contains methods and other services that help with interacting with
+// the handinger API.
+//
+// Note, unlike clients, this service does not read variables from the environment
+// automatically. You should not instantiate this service directly, and instead use
+// the [NewTaskService] method instead.
+type TaskService struct {
+	options []option.RequestOption
+}
+
+// NewTaskService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
+func NewTaskService(opts ...option.RequestOption) (r TaskService) {
+	r = TaskService{}
+	r.options = opts
+	return
+}
+
+// Run a new task against an existing worker. Send `multipart/form-data` to attach
+// files; the bytes are bootstrapped into the worker's workspace before the task
+// starts.
+func (r *TaskService) New(ctx context.Context, body TaskNewParams, opts ...option.RequestOption) (res *Worker, err error) {
+	opts = slices.Concat(r.options, opts)
+	path := "api/tasks"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return res, err
+}
+
+// Retrieve a single task and its individual turns.
+func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.RequestOption) (res *TaskWithTurns, err error) {
+	opts = slices.Concat(r.options, opts)
+	if taskID == "" {
+		err = errors.New("missing required taskId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/tasks/%s", url.PathEscape(taskID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return res, err
+}
+
+type CreateTaskParam struct {
+	// Worker id the task belongs to.
+	WorkerID string `json:"workerId" api:"required"`
+	CreateWorkerParam
+}
+
+func (r CreateTaskParam) MarshalJSON() (data []byte, err error) {
+	type shadow struct {
+		*CreateTaskParam
+		MarshalJSON bool `json:"-"` // Prevent inheriting [json.Marshaler] from the embedded field
+	}
+	return param.MarshalObject(r, shadow{&r, false})
+}
+
+type Task struct {
+	ID              string `json:"id" api:"required"`
+	CompletedAt     string `json:"completedAt" api:"required"`
+	CreatedAt       string `json:"createdAt" api:"required"`
+	CreatedByUserID string `json:"createdByUserId" api:"required"`
+	OrganizationID  string `json:"organizationId" api:"required"`
+	// Any of "pending", "running", "completed", "error", "aborted".
+	Status TaskStatus `json:"status" api:"required"`
+	Title  string     `json:"title" api:"required"`
+	Totals TaskTotals `json:"totals" api:"required"`
+	// Any of "api", "email", "schedule", "ui".
+	TriggeredBy TaskTriggeredBy `json:"triggeredBy" api:"required"`
+	WorkerID    string          `json:"workerId" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		ID              respjson.Field
+		CompletedAt     respjson.Field
+		CreatedAt       respjson.Field
+		CreatedByUserID respjson.Field
+		OrganizationID  respjson.Field
+		Status          respjson.Field
+		Title           respjson.Field
+		Totals          respjson.Field
+		TriggeredBy     respjson.Field
+		WorkerID        respjson.Field
+		ExtraFields     map[string]respjson.Field
+		raw             string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r Task) RawJSON() string { return r.JSON.raw }
+func (r *Task) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskStatus string
+
+const (
+	TaskStatusPending   TaskStatus = "pending"
+	TaskStatusRunning   TaskStatus = "running"
+	TaskStatusCompleted TaskStatus = "completed"
+	TaskStatusError     TaskStatus = "error"
+	TaskStatusAborted   TaskStatus = "aborted"
+)
+
+type TaskTotals struct {
+	Credits    float64 `json:"credits" api:"required"`
+	DurationMs float64 `json:"durationMs" api:"required"`
+	TurnCount  float64 `json:"turnCount" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Credits     respjson.Field
+		DurationMs  respjson.Field
+		TurnCount   respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r TaskTotals) RawJSON() string { return r.JSON.raw }
+func (r *TaskTotals) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskTriggeredBy string
+
+const (
+	TaskTriggeredByAPI      TaskTriggeredBy = "api"
+	TaskTriggeredByEmail    TaskTriggeredBy = "email"
+	TaskTriggeredBySchedule TaskTriggeredBy = "schedule"
+	TaskTriggeredByUi       TaskTriggeredBy = "ui"
+)
+
+type TaskWithTurns struct {
+	Task  Task                `json:"task" api:"required"`
+	Turns []TaskWithTurnsTurn `json:"turns" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Task        respjson.Field
+		Turns       respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r TaskWithTurns) RawJSON() string { return r.JSON.raw }
+func (r *TaskWithTurns) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskWithTurnsTurn struct {
+	ID           string  `json:"id" api:"required"`
+	CompletedAt  string  `json:"completedAt" api:"required"`
+	Credits      float64 `json:"credits" api:"required"`
+	DurationMs   int64   `json:"durationMs" api:"required"`
+	Input        string  `json:"input" api:"required"`
+	InputTokens  int64   `json:"inputTokens" api:"required"`
+	OutputText   string  `json:"outputText" api:"required"`
+	OutputTokens int64   `json:"outputTokens" api:"required"`
+	Role         string  `json:"role" api:"required"`
+	Seq          int64   `json:"seq" api:"required"`
+	StartedAt    string  `json:"startedAt" api:"required"`
+	Status       string  `json:"status" api:"required"`
+	TaskID       string  `json:"taskId" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		ID           respjson.Field
+		CompletedAt  respjson.Field
+		Credits      respjson.Field
+		DurationMs   respjson.Field
+		Input        respjson.Field
+		InputTokens  respjson.Field
+		OutputText   respjson.Field
+		OutputTokens respjson.Field
+		Role         respjson.Field
+		Seq          respjson.Field
+		StartedAt    respjson.Field
+		Status       respjson.Field
+		TaskID       respjson.Field
+		ExtraFields  map[string]respjson.Field
+		raw          string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r TaskWithTurnsTurn) RawJSON() string { return r.JSON.raw }
+func (r *TaskWithTurnsTurn) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskNewParams struct {
+	CreateTask CreateTaskParam
+	paramObj
+}
+
+func (r TaskNewParams) MarshalJSON() (data []byte, err error) {
+	return shimjson.Marshal(r.CreateTask)
+}
+func (r *TaskNewParams) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
