@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 (2026-05-04)
+
+Full Changelog: [v0.1.0...v0.2.0](https://github.com/Ramensoft/handinger-go/compare/v0.1.0...v0.2.0)
+
+### Features
+
+* Le big refactor ([011c908](https://github.com/Ramensoft/handinger-go/commit/011c9085a8b6daa7644ff980c5efed3a25fbd8fe))
+
+
+### Chores
+
+* avoid embedding reflect.Type for dead code elimination ([07b7b70](https://github.com/Ramensoft/handinger-go/commit/07b7b702c1320e71da24f111d687bdeda7eeb044))
+
 ## 0.1.0 (2026-04-30)
 
 Full Changelog: [v0.0.1...v0.1.0](https://github.com/Ramensoft/handinger-go/compare/v0.0.1...v0.1.0)
