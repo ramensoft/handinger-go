@@ -30,6 +30,7 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 		CreateWorker: handinger.CreateWorkerParam{
 			Title:        "Brand voice analyzer",
 			Instructions: handinger.String("instructions"),
+			Prompt:       handinger.String("prompt"),
 			Visibility:   handinger.CreateWorkerVisibilityPublic,
 		},
 	})
