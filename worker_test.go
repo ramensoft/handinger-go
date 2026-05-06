@@ -28,9 +28,9 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Title:        "Brand voice analyzer",
 			Instructions: handinger.String("instructions"),
 			Prompt:       handinger.String("prompt"),
+			Title:        handinger.String("Brand voice analyzer"),
 			Visibility:   handinger.CreateWorkerVisibilityPublic,
 		},
 	})
