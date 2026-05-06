@@ -78,14 +78,14 @@ func (r *WorkerService) GetEmail(ctx context.Context, workerID string, opts ...o
 	return res, err
 }
 
-// The property Title is required.
 type CreateWorkerParam struct {
-	Title string `json:"title" api:"required"`
 	// Persistent system prompt the worker uses for every task it runs.
 	Instructions param.Opt[string] `json:"instructions,omitzero"`
 	// Natural-language description of the worker to use for AI-generated instructions
 	// when `instructions` is omitted.
 	Prompt param.Opt[string] `json:"prompt,omitzero"`
+	// Optional display name. When omitted, Handinger assigns a random dog-themed name.
+	Title param.Opt[string] `json:"title,omitzero"`
 	// `public` (default) is visible to all org members. `private` is only visible to
 	// invited members.
 	//
