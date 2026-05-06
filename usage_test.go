@@ -27,10 +27,8 @@ func TestUsage(t *testing.T) {
 	)
 	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err != nil {

@@ -40,10 +40,8 @@ func TestUserAgentHeader(t *testing.T) {
 	)
 	_, _ = client.Tasks.New(context.Background(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if userAgent != fmt.Sprintf("Handinger/Go %s", internal.PackageVersion) {
@@ -71,10 +69,8 @@ func TestRetryAfter(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -113,10 +109,8 @@ func TestDeleteRetryCountHeader(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -150,10 +144,8 @@ func TestOverwriteRetryCountHeader(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -186,10 +178,8 @@ func TestRetryAfterMs(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.Background(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -216,10 +206,8 @@ func TestContextCancel(t *testing.T) {
 	cancel()
 	_, err := client.Tasks.New(cancelCtx, handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -243,10 +231,8 @@ func TestContextCancelDelay(t *testing.T) {
 	defer cancel()
 	_, err := client.Tasks.New(cancelCtx, handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Title: "Brand voice analyzer",
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			CreateWorkerParam: handinger.CreateWorkerParam{},
+			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		},
 	})
 	if err == nil {
@@ -276,10 +262,8 @@ func TestContextDeadline(t *testing.T) {
 		)
 		_, err := client.Tasks.New(deadlineCtx, handinger.TaskNewParams{
 			CreateTask: handinger.CreateTaskParam{
-				CreateWorkerParam: handinger.CreateWorkerParam{
-					Title: "Brand voice analyzer",
-				},
-				WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+				CreateWorkerParam: handinger.CreateWorkerParam{},
+				WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 			},
 		})
 		if err == nil {
