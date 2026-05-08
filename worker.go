@@ -86,6 +86,10 @@ type CreateWorkerParam struct {
 	Prompt param.Opt[string] `json:"prompt,omitzero"`
 	// Optional display name. When omitted, Handinger assigns a random dog-themed name.
 	Title param.Opt[string] `json:"title,omitzero"`
+	// Optional JSON Schema (Draft-07) describing the structured object the worker must
+	// produce. When set, every task response is validated against the schema and
+	// exposed as `structuredOutput`.
+	OutputSchema map[string]any `json:"outputSchema,omitzero"`
 	// `public` (default) is visible to all org members. `private` is only visible to
 	// invited members.
 	//
@@ -126,8 +130,9 @@ type Worker struct {
 	Running    bool           `json:"running" api:"required"`
 	Sources    []WorkerSource `json:"sources" api:"required"`
 	// Any of "running", "completed", "pending".
-	Status WorkerStatus `json:"status" api:"required"`
-	Usage  WorkerUsage  `json:"usage"`
+	Status           WorkerStatus   `json:"status" api:"required"`
+	StructuredOutput map[string]any `json:"structured_output" api:"required"`
+	Usage            WorkerUsage    `json:"usage"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID                respjson.Field
@@ -143,6 +148,7 @@ type Worker struct {
 		Running           respjson.Field
 		Sources           respjson.Field
 		Status            respjson.Field
+		StructuredOutput  respjson.Field
 		Usage             respjson.Field
 		ExtraFields       map[string]respjson.Field
 		raw               string
@@ -277,13 +283,14 @@ func (r *WorkerUsage) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerNewResponse struct {
-	ID             string `json:"id" api:"required"`
-	CreatedAt      string `json:"createdAt" api:"required"`
-	Instructions   string `json:"instructions" api:"required"`
-	OrganizationID string `json:"organizationId" api:"required"`
-	Title          string `json:"title" api:"required"`
-	UpdatedAt      string `json:"updatedAt" api:"required"`
-	UserID         string `json:"userId" api:"required"`
+	ID             string         `json:"id" api:"required"`
+	CreatedAt      string         `json:"createdAt" api:"required"`
+	Instructions   string         `json:"instructions" api:"required"`
+	OrganizationID string         `json:"organizationId" api:"required"`
+	OutputSchema   map[string]any `json:"outputSchema" api:"required"`
+	Title          string         `json:"title" api:"required"`
+	UpdatedAt      string         `json:"updatedAt" api:"required"`
+	UserID         string         `json:"userId" api:"required"`
 	// Any of "public", "private".
 	Visibility WorkerNewResponseVisibility `json:"visibility" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
@@ -292,6 +299,7 @@ type WorkerNewResponse struct {
 		CreatedAt      respjson.Field
 		Instructions   respjson.Field
 		OrganizationID respjson.Field
+		OutputSchema   respjson.Field
 		Title          respjson.Field
 		UpdatedAt      respjson.Field
 		UserID         respjson.Field

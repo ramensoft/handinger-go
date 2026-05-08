@@ -29,9 +29,12 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 	_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
 			Instructions: handinger.String("instructions"),
-			Prompt:       handinger.String("prompt"),
-			Title:        handinger.String("Brand voice analyzer"),
-			Visibility:   handinger.CreateWorkerVisibilityPublic,
+			OutputSchema: map[string]any{
+				"foo": "bar",
+			},
+			Prompt:     handinger.String("prompt"),
+			Title:      handinger.String("Brand voice analyzer"),
+			Visibility: handinger.CreateWorkerVisibilityPublic,
 		},
 	})
 	if err != nil {
