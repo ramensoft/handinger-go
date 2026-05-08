@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 (2026-05-08)
+
+Full Changelog: [v0.4.1...v0.5.0](https://github.com/Ramensoft/handinger-go/compare/v0.4.1...v0.5.0)
+
+### Features
+
+* Overhaul email/permissions and ids ([8a69cda](https://github.com/Ramensoft/handinger-go/commit/8a69cda27f2426175699c7fa8ac40797808b30bb))
+
 ## 0.4.1 (2026-05-08)
 
 Full Changelog: [v0.4.0...v0.4.1](https://github.com/Ramensoft/handinger-go/compare/v0.4.0...v0.4.1)
