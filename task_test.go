@@ -34,6 +34,7 @@ func TestTaskNewWithOptionalParams(t *testing.T) {
 					"foo": "bar",
 				},
 				Prompt:     handinger.String("prompt"),
+				Summary:    handinger.String("summary"),
 				Title:      handinger.String("Brand voice analyzer"),
 				Visibility: handinger.CreateWorkerVisibilityPublic,
 			},

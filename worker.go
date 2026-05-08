@@ -84,6 +84,9 @@ type CreateWorkerParam struct {
 	// Natural-language description of the worker to use for AI-generated instructions
 	// when `instructions` is omitted.
 	Prompt param.Opt[string] `json:"prompt,omitzero"`
+	// Short one-line description of the worker's purpose. Auto-generated when omitted
+	// and a `prompt` is provided.
+	Summary param.Opt[string] `json:"summary,omitzero"`
 	// Optional display name. When omitted, Handinger assigns a random dog-themed name.
 	Title param.Opt[string] `json:"title,omitzero"`
 	// Optional JSON Schema (Draft-07) describing the structured object the worker must
@@ -288,6 +291,7 @@ type WorkerNewResponse struct {
 	Instructions   string         `json:"instructions" api:"required"`
 	OrganizationID string         `json:"organizationId" api:"required"`
 	OutputSchema   map[string]any `json:"outputSchema" api:"required"`
+	Summary        string         `json:"summary" api:"required"`
 	Title          string         `json:"title" api:"required"`
 	UpdatedAt      string         `json:"updatedAt" api:"required"`
 	UserID         string         `json:"userId" api:"required"`
@@ -300,6 +304,7 @@ type WorkerNewResponse struct {
 		Instructions   respjson.Field
 		OrganizationID respjson.Field
 		OutputSchema   respjson.Field
+		Summary        respjson.Field
 		Title          respjson.Field
 		UpdatedAt      respjson.Field
 		UserID         respjson.Field
