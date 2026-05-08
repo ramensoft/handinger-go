@@ -169,36 +169,38 @@ func (r *TaskWithTurns) UnmarshalJSON(data []byte) error {
 }
 
 type TaskWithTurnsTurn struct {
-	ID           string  `json:"id" api:"required"`
-	CompletedAt  string  `json:"completedAt" api:"required"`
-	Credits      float64 `json:"credits" api:"required"`
-	DurationMs   int64   `json:"durationMs" api:"required"`
-	Input        string  `json:"input" api:"required"`
-	InputTokens  int64   `json:"inputTokens" api:"required"`
-	OutputText   string  `json:"outputText" api:"required"`
-	OutputTokens int64   `json:"outputTokens" api:"required"`
-	Role         string  `json:"role" api:"required"`
-	Seq          int64   `json:"seq" api:"required"`
-	StartedAt    string  `json:"startedAt" api:"required"`
-	Status       string  `json:"status" api:"required"`
-	TaskID       string  `json:"taskId" api:"required"`
+	ID               string         `json:"id" api:"required"`
+	CompletedAt      string         `json:"completedAt" api:"required"`
+	Credits          float64        `json:"credits" api:"required"`
+	DurationMs       int64          `json:"durationMs" api:"required"`
+	Input            string         `json:"input" api:"required"`
+	InputTokens      int64          `json:"inputTokens" api:"required"`
+	OutputText       string         `json:"outputText" api:"required"`
+	OutputTokens     int64          `json:"outputTokens" api:"required"`
+	Role             string         `json:"role" api:"required"`
+	Seq              int64          `json:"seq" api:"required"`
+	StartedAt        string         `json:"startedAt" api:"required"`
+	Status           string         `json:"status" api:"required"`
+	StructuredOutput map[string]any `json:"structuredOutput" api:"required"`
+	TaskID           string         `json:"taskId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
-		ID           respjson.Field
-		CompletedAt  respjson.Field
-		Credits      respjson.Field
-		DurationMs   respjson.Field
-		Input        respjson.Field
-		InputTokens  respjson.Field
-		OutputText   respjson.Field
-		OutputTokens respjson.Field
-		Role         respjson.Field
-		Seq          respjson.Field
-		StartedAt    respjson.Field
-		Status       respjson.Field
-		TaskID       respjson.Field
-		ExtraFields  map[string]respjson.Field
-		raw          string
+		ID               respjson.Field
+		CompletedAt      respjson.Field
+		Credits          respjson.Field
+		DurationMs       respjson.Field
+		Input            respjson.Field
+		InputTokens      respjson.Field
+		OutputText       respjson.Field
+		OutputTokens     respjson.Field
+		Role             respjson.Field
+		Seq              respjson.Field
+		StartedAt        respjson.Field
+		Status           respjson.Field
+		StructuredOutput respjson.Field
+		TaskID           respjson.Field
+		ExtraFields      map[string]respjson.Field
+		raw              string
 	} `json:"-"`
 }
 
