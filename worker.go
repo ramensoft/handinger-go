@@ -67,7 +67,7 @@ func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGe
 }
 
 // Retrieve the inbound email address for a worker.
-func (r *WorkerService) GetEmail(ctx context.Context, workerID string, opts ...option.RequestOption) (res *string, err error) {
+func (r *WorkerService) GetEmail(ctx context.Context, workerID string, opts ...option.RequestOption) (res *WorkerGetEmailResponse, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
 		err = errors.New("missing required workerId parameter")
@@ -313,6 +313,22 @@ const (
 	WorkerNewResponseVisibilityPublic  WorkerNewResponseVisibility = "public"
 	WorkerNewResponseVisibilityPrivate WorkerNewResponseVisibility = "private"
 )
+
+type WorkerGetEmailResponse struct {
+	Email string `json:"email" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Email       respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r WorkerGetEmailResponse) RawJSON() string { return r.JSON.raw }
+func (r *WorkerGetEmailResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
 
 type WorkerNewParams struct {
 	CreateWorker CreateWorkerParam
