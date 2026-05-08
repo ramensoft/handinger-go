@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1 (2026-05-08)
+
+Full Changelog: [v0.4.0...v0.4.1](https://github.com/Ramensoft/handinger-go/compare/v0.4.0...v0.4.1)
+
+### Bug Fixes
+
+* **go:** avoid panic when http.DefaultTransport is wrapped ([97172a5](https://github.com/Ramensoft/handinger-go/commit/97172a5e4b6ae33d95251ffb3bedd964e8b62da5))
+
+
+### Chores
+
+* redact api-key headers in debug logs ([050e056](https://github.com/Ramensoft/handinger-go/commit/050e0569a0ff7b865d2d3c8c8203553090be3f4f))
+
 ## 0.4.0 (2026-05-06)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/Ramensoft/handinger-go/compare/v0.3.0...v0.4.0)
