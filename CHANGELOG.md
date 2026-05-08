@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 (2026-05-08)
+
+Full Changelog: [v0.5.0...v0.6.0](https://github.com/Ramensoft/handinger-go/compare/v0.5.0...v0.6.0)
+
+### Features
+
+* Add JSON Schema output validation and structured display ([c25c571](https://github.com/Ramensoft/handinger-go/commit/c25c571b29e07c25e1277059acfffee632746a99))
+
 ## 0.5.0 (2026-05-08)
 
 Full Changelog: [v0.4.1...v0.5.0](https://github.com/Ramensoft/handinger-go/compare/v0.4.1...v0.5.0)
