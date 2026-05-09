@@ -38,7 +38,8 @@ func TestTaskNewWithOptionalParams(t *testing.T) {
 				Title:      handinger.String("Brand voice analyzer"),
 				Visibility: handinger.CreateWorkerVisibilityPublic,
 			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			WorkerID: "wrk_vk81XUHKHG-qr4",
+			TaskID:   handinger.String("tsk_2Z-YWz3hFq6VlW"),
 		},
 	})
 	if err != nil {

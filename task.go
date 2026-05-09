@@ -64,6 +64,9 @@ func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.Req
 type CreateTaskParam struct {
 	// Worker id the task belongs to.
 	WorkerID string `json:"workerId" api:"required"`
+	// Optional client-provided task id. Reuse this id to add turns to an existing
+	// task.
+	TaskID param.Opt[string] `json:"taskId,omitzero"`
 	CreateWorkerParam
 }
 

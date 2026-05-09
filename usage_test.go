@@ -25,12 +25,7 @@ func TestUsage(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
-		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
-		},
-	})
+	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{})
 	if err != nil {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
