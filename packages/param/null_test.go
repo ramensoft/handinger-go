@@ -2,7 +2,7 @@ package param_test
 
 import (
 	"encoding/json"
-	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/packages/param"
 	"testing"
 )
 

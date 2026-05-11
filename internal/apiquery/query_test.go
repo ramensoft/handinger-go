@@ -1,7 +1,7 @@
 package apiquery
 
 import (
-	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/packages/param"
 	"net/url"
 	"testing"
 	"time"

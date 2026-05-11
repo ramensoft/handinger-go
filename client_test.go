@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Ramensoft/handinger-go"
-	"github.com/Ramensoft/handinger-go/internal"
-	"github.com/Ramensoft/handinger-go/option"
+	"github.com/ramensoft/handinger-go"
+	"github.com/ramensoft/handinger-go/internal"
+	"github.com/ramensoft/handinger-go/option"
 )
 
 type closureTransport struct {

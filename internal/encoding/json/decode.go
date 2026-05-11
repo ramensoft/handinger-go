@@ -14,7 +14,7 @@ import (
 	"encoding"
 	"encoding/base64"
 	"fmt"
-	"github.com/Ramensoft/handinger-go/internal/encoding/json/shims"
+	"github.com/ramensoft/handinger-go/internal/encoding/json/shims"
 	"reflect"
 	"strconv"
 	"strings"

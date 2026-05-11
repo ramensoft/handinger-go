@@ -13,7 +13,7 @@ import (
 
 	"github.com/tidwall/sjson"
 
-	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
+	shimjson "github.com/ramensoft/handinger-go/internal/encoding/json"
 )
 
 var encoders sync.Map // map[encoderEntry]encoderFunc
