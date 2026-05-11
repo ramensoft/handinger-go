@@ -45,7 +45,7 @@ func NewWorkerService(opts ...option.RequestOption) (r WorkerService) {
 
 // Create a new worker. The worker is a reusable agent template; tasks are runs
 // against this template. Use `POST /tasks` to actually run the agent.
-func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *WorkerNewResponse, err error) {
+func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *WorkerTemplate, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/workers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -63,6 +63,34 @@ func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGe
 	}
 	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return res, err
+}
+
+// Update a worker's instructions, title, summary, visibility, or output schema.
+// Only the fields you send are changed; omitted fields keep their current values.
+// Only the worker creator can update a worker.
+func (r *WorkerService) Update(ctx context.Context, workerID string, body WorkerUpdateParams, opts ...option.RequestOption) (res *WorkerTemplate, err error) {
+	opts = slices.Concat(r.options, opts)
+	if workerID == "" {
+		err = errors.New("missing required workerId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	return res, err
+}
+
+// Permanently delete a worker template along with its tasks, turns, files,
+// schedules, and integrations. This action is not reversible. Only the worker
+// creator can delete a worker.
+func (r *WorkerService) Delete(ctx context.Context, workerID string, opts ...option.RequestOption) (res *DeleteWorkerResponse, err error) {
+	opts = slices.Concat(r.options, opts)
+	if workerID == "" {
+		err = errors.New("missing required workerId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return res, err
 }
 
@@ -116,6 +144,58 @@ type CreateWorkerVisibility string
 const (
 	CreateWorkerVisibilityPublic  CreateWorkerVisibility = "public"
 	CreateWorkerVisibilityPrivate CreateWorkerVisibility = "private"
+)
+
+type DeleteWorkerResponse struct {
+	Deleted bool `json:"deleted" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Deleted     respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r DeleteWorkerResponse) RawJSON() string { return r.JSON.raw }
+func (r *DeleteWorkerResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type UpdateWorkerParam struct {
+	// Replaces the persistent system prompt. Subsequent tasks pick up the new
+	// instructions immediately; in-flight tasks keep using the previous version.
+	Instructions param.Opt[string] `json:"instructions,omitzero"`
+	// Replaces the worker's short one-line summary.
+	Summary param.Opt[string] `json:"summary,omitzero"`
+	// New display name for the worker.
+	Title param.Opt[string] `json:"title,omitzero"`
+	// Replace the worker's structured output schema. Pass `null` to clear it and
+	// return to free-form text responses.
+	OutputSchema map[string]any `json:"outputSchema,omitzero"`
+	// Change visibility between `public` (any org member can run tasks) and `private`
+	// (only invited members).
+	//
+	// Any of "public", "private".
+	Visibility UpdateWorkerVisibility `json:"visibility,omitzero"`
+	paramObj
+}
+
+func (r UpdateWorkerParam) MarshalJSON() (data []byte, err error) {
+	type shadow UpdateWorkerParam
+	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r *UpdateWorkerParam) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Change visibility between `public` (any org member can run tasks) and `private`
+// (only invited members).
+type UpdateWorkerVisibility string
+
+const (
+	UpdateWorkerVisibilityPublic  UpdateWorkerVisibility = "public"
+	UpdateWorkerVisibilityPrivate UpdateWorkerVisibility = "private"
 )
 
 type Worker struct {
@@ -285,7 +365,7 @@ func (r *WorkerUsage) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerNewResponse struct {
+type WorkerTemplate struct {
 	ID             string         `json:"id" api:"required"`
 	CreatedAt      string         `json:"createdAt" api:"required"`
 	Instructions   string         `json:"instructions" api:"required"`
@@ -296,7 +376,7 @@ type WorkerNewResponse struct {
 	UpdatedAt      string         `json:"updatedAt" api:"required"`
 	UserID         string         `json:"userId" api:"required"`
 	// Any of "public", "private".
-	Visibility WorkerNewResponseVisibility `json:"visibility" api:"required"`
+	Visibility WorkerTemplateVisibility `json:"visibility" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID             respjson.Field
@@ -315,16 +395,16 @@ type WorkerNewResponse struct {
 }
 
 // Returns the unmodified JSON received from the API
-func (r WorkerNewResponse) RawJSON() string { return r.JSON.raw }
-func (r *WorkerNewResponse) UnmarshalJSON(data []byte) error {
+func (r WorkerTemplate) RawJSON() string { return r.JSON.raw }
+func (r *WorkerTemplate) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerNewResponseVisibility string
+type WorkerTemplateVisibility string
 
 const (
-	WorkerNewResponseVisibilityPublic  WorkerNewResponseVisibility = "public"
-	WorkerNewResponseVisibilityPrivate WorkerNewResponseVisibility = "private"
+	WorkerTemplateVisibilityPublic  WorkerTemplateVisibility = "public"
+	WorkerTemplateVisibilityPrivate WorkerTemplateVisibility = "private"
 )
 
 type WorkerGetEmailResponse struct {
@@ -382,3 +462,15 @@ const (
 	WorkerGetParamsStreamTrue  WorkerGetParamsStream = "true"
 	WorkerGetParamsStreamFalse WorkerGetParamsStream = "false"
 )
+
+type WorkerUpdateParams struct {
+	UpdateWorker UpdateWorkerParam
+	paramObj
+}
+
+func (r WorkerUpdateParams) MarshalJSON() (data []byte, err error) {
+	return shimjson.Marshal(r.UpdateWorker)
+}
+func (r *WorkerUpdateParams) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}

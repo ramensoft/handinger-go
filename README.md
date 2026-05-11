@@ -6,7 +6,7 @@
 
 <!-- x-release-please-end -->
 
-The Handinger Go library provides convenient access to the Handinger REST API
+The Handinger Go library provides convenient access to the [Handinger REST API](https://docs.handinger.com)
 from applications written in Go.
 
 It is generated with [Stainless](https://www.stainless.com/).

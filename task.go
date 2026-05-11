@@ -39,9 +39,10 @@ func NewTaskService(opts ...option.RequestOption) (r TaskService) {
 	return
 }
 
-// Run a new task against an existing worker. Send `multipart/form-data` to attach
-// files; the bytes are bootstrapped into the worker's workspace before the task
-// starts.
+// Run a new task against an existing worker. Send a `taskId` of a prior task to
+// add a follow-up turn instead of starting a fresh task. Send
+// `multipart/form-data` to attach files; the bytes are bootstrapped into the
+// worker's workspace before the task starts.
 func (r *TaskService) New(ctx context.Context, body TaskNewParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/tasks"
@@ -61,6 +62,19 @@ func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.Req
 	return res, err
 }
 
+// Archive a task so it stops appearing in `GET /tasks` results. Turns and files
+// are retained for audit purposes. Only the worker creator can archive a task.
+func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.RequestOption) (res *DeleteTaskResponse, err error) {
+	opts = slices.Concat(r.options, opts)
+	if taskID == "" {
+		err = errors.New("missing required taskId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/tasks/%s", url.PathEscape(taskID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
+	return res, err
+}
+
 type CreateTaskParam struct {
 	// Worker id the task belongs to.
 	WorkerID string `json:"workerId" api:"required"`
@@ -76,6 +90,22 @@ func (r CreateTaskParam) MarshalJSON() (data []byte, err error) {
 		MarshalJSON bool `json:"-"` // Prevent inheriting [json.Marshaler] from the embedded field
 	}
 	return param.MarshalObject(r, shadow{&r, false})
+}
+
+type DeleteTaskResponse struct {
+	Archived bool `json:"archived" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Archived    respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r DeleteTaskResponse) RawJSON() string { return r.JSON.raw }
+func (r *DeleteTaskResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type Task struct {
