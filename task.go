@@ -76,11 +76,12 @@ func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.
 }
 
 type CreateTaskParam struct {
-	// Worker id the task belongs to.
-	WorkerID string `json:"workerId" api:"required"`
 	// Optional client-provided task id. Reuse this id to add turns to an existing
 	// task.
 	TaskID param.Opt[string] `json:"taskId,omitzero"`
+	// Worker id the task belongs to. If omitted, a new worker is created on-the-fly
+	// using the input as instructions.
+	WorkerID param.Opt[string] `json:"workerId,omitzero"`
 	CreateWorkerParam
 }
 
