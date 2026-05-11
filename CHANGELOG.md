@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1 (2026-05-11)
+
+Full Changelog: [v0.7.0...v0.7.1](https://github.com/ramensoft/handinger-go/compare/v0.7.0...v0.7.1)
+
+### Bug Fixes
+
+* **types:** correct task totals and turn fields from float64 to int64 ([54235f4](https://github.com/ramensoft/handinger-go/commit/54235f4ca847774123bd13e47fd6df02a2c11c42))
+
 ## 0.7.0 (2026-05-11)
 
 Full Changelog: [v0.6.1...v0.7.0](https://github.com/ramensoft/handinger-go/compare/v0.6.1...v0.7.0)
