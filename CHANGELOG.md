@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 (2026-05-11)
+
+Full Changelog: [v0.7.2...v0.8.0](https://github.com/ramensoft/handinger-go/compare/v0.7.2...v0.8.0)
+
+### Features
+
+* **api:** api update ([9b77c5d](https://github.com/ramensoft/handinger-go/commit/9b77c5d974f97f72218b59e19420ca2642de8462))
+
 ## 0.7.2 (2026-05-11)
 
 Full Changelog: [v0.7.1...v0.7.2](https://github.com/ramensoft/handinger-go/compare/v0.7.1...v0.7.2)
