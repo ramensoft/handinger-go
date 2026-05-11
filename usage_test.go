@@ -27,8 +27,7 @@ func TestUsage(t *testing.T) {
 	)
 	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err != nil {

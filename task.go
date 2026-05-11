@@ -39,9 +39,10 @@ func NewTaskService(opts ...option.RequestOption) (r TaskService) {
 	return
 }
 
-// Run a new task against an existing worker. Send `multipart/form-data` to attach
-// files; the bytes are bootstrapped into the worker's workspace before the task
-// starts.
+// Run a new task against an existing worker. Send a `taskId` of a prior task to
+// add a follow-up turn instead of starting a fresh task. Send
+// `multipart/form-data` to attach files; the bytes are bootstrapped into the
+// worker's workspace before the task starts.
 func (r *TaskService) New(ctx context.Context, body TaskNewParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/tasks"
@@ -61,18 +62,65 @@ func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.Req
 	return res, err
 }
 
+// Archive a task so it stops appearing in `GET /tasks` results. Turns and files
+// are retained for audit purposes. Only the worker creator can archive a task.
+func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.RequestOption) (res *DeleteTaskResponse, err error) {
+	opts = slices.Concat(r.options, opts)
+	if taskID == "" {
+		err = errors.New("missing required taskId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/tasks/%s", url.PathEscape(taskID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
+	return res, err
+}
+
+// The property Input is required.
 type CreateTaskParam struct {
-	// Worker id the task belongs to.
-	WorkerID string `json:"workerId" api:"required"`
-	CreateWorkerParam
+	Input  string          `json:"input" api:"required"`
+	Stream param.Opt[bool] `json:"stream,omitzero"`
+	// Optional client-provided task id. Reuse this id to add turns to an existing
+	// task.
+	TaskID param.Opt[string] `json:"taskId,omitzero"`
+	// Worker id the task belongs to. If omitted, a new worker is created on-the-fly
+	// using the input as instructions.
+	WorkerID param.Opt[string] `json:"workerId,omitzero"`
+	// Any of "low", "standard", "high", "unlimited".
+	Budget CreateTaskBudget `json:"budget,omitzero"`
+	paramObj
 }
 
 func (r CreateTaskParam) MarshalJSON() (data []byte, err error) {
-	type shadow struct {
-		*CreateTaskParam
-		MarshalJSON bool `json:"-"` // Prevent inheriting [json.Marshaler] from the embedded field
-	}
-	return param.MarshalObject(r, shadow{&r, false})
+	type shadow CreateTaskParam
+	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r *CreateTaskParam) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CreateTaskBudget string
+
+const (
+	CreateTaskBudgetLow       CreateTaskBudget = "low"
+	CreateTaskBudgetStandard  CreateTaskBudget = "standard"
+	CreateTaskBudgetHigh      CreateTaskBudget = "high"
+	CreateTaskBudgetUnlimited CreateTaskBudget = "unlimited"
+)
+
+type DeleteTaskResponse struct {
+	Archived bool `json:"archived" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Archived    respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r DeleteTaskResponse) RawJSON() string { return r.JSON.raw }
+func (r *DeleteTaskResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type Task struct {
@@ -87,7 +135,9 @@ type Task struct {
 	Totals TaskTotals `json:"totals" api:"required"`
 	// Any of "api", "email", "schedule", "ui".
 	TriggeredBy TaskTriggeredBy `json:"triggeredBy" api:"required"`
-	WorkerID    string          `json:"workerId" api:"required"`
+	// Web URL of the task in the Handinger dashboard.
+	URL      string `json:"url" api:"required"`
+	WorkerID string `json:"workerId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID              respjson.Field
@@ -99,6 +149,7 @@ type Task struct {
 		Title           respjson.Field
 		Totals          respjson.Field
 		TriggeredBy     respjson.Field
+		URL             respjson.Field
 		WorkerID        respjson.Field
 		ExtraFields     map[string]respjson.Field
 		raw             string

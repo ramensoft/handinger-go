@@ -13,7 +13,7 @@ import (
 	"github.com/Ramensoft/handinger-go/option"
 )
 
-func TestWorkerNewWithOptionalParams(t *testing.T) {
+func TestWorkerWebhookGet(t *testing.T) {
 	t.Skip("Mock server tests are disabled")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -26,18 +26,7 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
-		CreateWorker: handinger.CreateWorkerParam{
-			Instructions: handinger.String("instructions"),
-			OutputSchema: map[string]any{
-				"foo": "bar",
-			},
-			Prompt:     handinger.String("prompt"),
-			Summary:    handinger.String("summary"),
-			Title:      handinger.String("Brand voice analyzer"),
-			Visibility: handinger.CreateWorkerVisibilityPublic,
-		},
-	})
+	_, err := client.Workers.Webhooks.Get(context.TODO(), "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM")
 	if err != nil {
 		var apierr *handinger.Error
 		if errors.As(err, &apierr) {
@@ -47,7 +36,7 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestWorkerGetWithOptionalParams(t *testing.T) {
+func TestWorkerWebhookUpdate(t *testing.T) {
 	t.Skip("Mock server tests are disabled")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -60,47 +49,12 @@ func TestWorkerGetWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	_, err := client.Workers.Get(
+	_, err := client.Workers.Webhooks.Update(
 		context.TODO(),
 		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
-		handinger.WorkerGetParams{
-			Stream: handinger.WorkerGetParamsStreamTrue,
-		},
-	)
-	if err != nil {
-		var apierr *handinger.Error
-		if errors.As(err, &apierr) {
-			t.Log(string(apierr.DumpRequest(true)))
-		}
-		t.Fatalf("err should be nil: %s", err.Error())
-	}
-}
-
-func TestWorkerUpdateWithOptionalParams(t *testing.T) {
-	t.Skip("Mock server tests are disabled")
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
-	client := handinger.NewClient(
-		option.WithBaseURL(baseURL),
-		option.WithAPIKey("My API Key"),
-	)
-	_, err := client.Workers.Update(
-		context.TODO(),
-		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
-		handinger.WorkerUpdateParams{
-			UpdateWorker: handinger.UpdateWorkerParam{
-				Instructions: handinger.String("instructions"),
-				OutputSchema: map[string]any{
-					"foo": "bar",
-				},
-				Summary:    handinger.String("summary"),
-				Title:      handinger.String("Brand voice analyzer"),
-				Visibility: handinger.UpdateWorkerVisibilityPublic,
+		handinger.WorkerWebhookUpdateParams{
+			UpdateWebhook: handinger.UpdateWebhookParam{
+				URL: handinger.String("https://example.com/handinger-webhook"),
 			},
 		},
 	)
@@ -113,7 +67,7 @@ func TestWorkerUpdateWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestWorkerDelete(t *testing.T) {
+func TestWorkerWebhookDelete(t *testing.T) {
 	t.Skip("Mock server tests are disabled")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -126,7 +80,7 @@ func TestWorkerDelete(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	_, err := client.Workers.Delete(context.TODO(), "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM")
+	_, err := client.Workers.Webhooks.Delete(context.TODO(), "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM")
 	if err != nil {
 		var apierr *handinger.Error
 		if errors.As(err, &apierr) {
@@ -136,7 +90,7 @@ func TestWorkerDelete(t *testing.T) {
 	}
 }
 
-func TestWorkerGetEmail(t *testing.T) {
+func TestWorkerWebhookListExecutionsWithOptionalParams(t *testing.T) {
 	t.Skip("Mock server tests are disabled")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -149,7 +103,36 @@ func TestWorkerGetEmail(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	_, err := client.Workers.GetEmail(context.TODO(), "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM")
+	_, err := client.Workers.Webhooks.ListExecutions(
+		context.TODO(),
+		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+		handinger.WorkerWebhookListExecutionsParams{
+			Page: handinger.Int(1),
+		},
+	)
+	if err != nil {
+		var apierr *handinger.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestWorkerWebhookRegenerateToken(t *testing.T) {
+	t.Skip("Mock server tests are disabled")
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := handinger.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My API Key"),
+	)
+	_, err := client.Workers.Webhooks.RegenerateToken(context.TODO(), "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM")
 	if err != nil {
 		var apierr *handinger.Error
 		if errors.As(err, &apierr) {

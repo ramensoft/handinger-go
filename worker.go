@@ -17,6 +17,7 @@ import (
 	"github.com/Ramensoft/handinger-go/option"
 	"github.com/Ramensoft/handinger-go/packages/param"
 	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/shared/constant"
 )
 
 // Create, retrieve, and manage agent worker templates.
@@ -31,6 +32,8 @@ type WorkerService struct {
 	options []option.RequestOption
 	// Manage future and recurring worker tasks.
 	Schedules WorkerScheduleService
+	// Configure outbound webhooks delivered when a worker's tasks complete.
+	Webhooks WorkerWebhookService
 }
 
 // NewWorkerService generates a new service that applies the given options to each
@@ -40,12 +43,13 @@ func NewWorkerService(opts ...option.RequestOption) (r WorkerService) {
 	r = WorkerService{}
 	r.options = opts
 	r.Schedules = NewWorkerScheduleService(opts...)
+	r.Webhooks = NewWorkerWebhookService(opts...)
 	return
 }
 
 // Create a new worker. The worker is a reusable agent template; tasks are runs
 // against this template. Use `POST /tasks` to actually run the agent.
-func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *WorkerNewResponse, err error) {
+func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...option.RequestOption) (res *WorkerTemplate, err error) {
 	opts = slices.Concat(r.options, opts)
 	path := "api/workers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -63,6 +67,34 @@ func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGe
 	}
 	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return res, err
+}
+
+// Update a worker's instructions, title, summary, visibility, or output schema.
+// Only the fields you send are changed; omitted fields keep their current values.
+// Only the worker creator can update a worker.
+func (r *WorkerService) Update(ctx context.Context, workerID string, body WorkerUpdateParams, opts ...option.RequestOption) (res *WorkerTemplate, err error) {
+	opts = slices.Concat(r.options, opts)
+	if workerID == "" {
+		err = errors.New("missing required workerId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	return res, err
+}
+
+// Soft-delete a worker template so it no longer appears in list or retrieve
+// endpoints. Tasks, turns, files, schedules, and integrations remain in the
+// database for analytics. Only the worker creator can delete a worker.
+func (r *WorkerService) Delete(ctx context.Context, workerID string, opts ...option.RequestOption) (res *DeleteWorkerResponse, err error) {
+	opts = slices.Concat(r.options, opts)
+	if workerID == "" {
+		err = errors.New("missing required workerId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/workers/%s", url.PathEscape(workerID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return res, err
 }
 
@@ -84,6 +116,9 @@ type CreateWorkerParam struct {
 	// Natural-language description of the worker to use for AI-generated instructions
 	// when `instructions` is omitted.
 	Prompt param.Opt[string] `json:"prompt,omitzero"`
+	// Short one-line description of the worker's purpose. Auto-generated when omitted
+	// and a `prompt` is provided.
+	Summary param.Opt[string] `json:"summary,omitzero"`
 	// Optional display name. When omitted, Handinger assigns a random dog-themed name.
 	Title param.Opt[string] `json:"title,omitzero"`
 	// Optional JSON Schema (Draft-07) describing the structured object the worker must
@@ -115,24 +150,77 @@ const (
 	CreateWorkerVisibilityPrivate CreateWorkerVisibility = "private"
 )
 
+type DeleteWorkerResponse struct {
+	Deleted bool `json:"deleted" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Deleted     respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r DeleteWorkerResponse) RawJSON() string { return r.JSON.raw }
+func (r *DeleteWorkerResponse) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type UpdateWorkerParam struct {
+	// Replaces the persistent system prompt. Subsequent tasks pick up the new
+	// instructions immediately; in-flight tasks keep using the previous version.
+	Instructions param.Opt[string] `json:"instructions,omitzero"`
+	// Replaces the worker's short one-line summary.
+	Summary param.Opt[string] `json:"summary,omitzero"`
+	// New display name for the worker.
+	Title param.Opt[string] `json:"title,omitzero"`
+	// Replace the worker's structured output schema. Pass `null` to clear it and
+	// return to free-form text responses.
+	OutputSchema map[string]any `json:"outputSchema,omitzero"`
+	// Change visibility between `public` (any org member can run tasks) and `private`
+	// (only invited members).
+	//
+	// Any of "public", "private".
+	Visibility UpdateWorkerVisibility `json:"visibility,omitzero"`
+	paramObj
+}
+
+func (r UpdateWorkerParam) MarshalJSON() (data []byte, err error) {
+	type shadow UpdateWorkerParam
+	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r *UpdateWorkerParam) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Change visibility between `public` (any org member can run tasks) and `private`
+// (only invited members).
+type UpdateWorkerVisibility string
+
+const (
+	UpdateWorkerVisibilityPublic  UpdateWorkerVisibility = "public"
+	UpdateWorkerVisibilityPrivate UpdateWorkerVisibility = "private"
+)
+
 type Worker struct {
-	ID                string         `json:"id" api:"required"`
-	CreatedAt         int64          `json:"created_at" api:"required"`
-	Error             any            `json:"error" api:"required"`
-	Files             []WorkerFile   `json:"files" api:"required"`
-	IncompleteDetails any            `json:"incomplete_details" api:"required"`
-	Messages          []any          `json:"messages" api:"required"`
-	Metadata          map[string]any `json:"metadata" api:"required"`
-	// Any of "worker".
-	Object     WorkerObject   `json:"object" api:"required"`
-	Output     []WorkerOutput `json:"output" api:"required"`
-	OutputText string         `json:"output_text" api:"required"`
-	Running    bool           `json:"running" api:"required"`
-	Sources    []WorkerSource `json:"sources" api:"required"`
+	ID                string          `json:"id" api:"required"`
+	CreatedAt         int64           `json:"created_at" api:"required"`
+	Error             any             `json:"error" api:"required"`
+	Files             []WorkerFile    `json:"files" api:"required"`
+	IncompleteDetails any             `json:"incomplete_details" api:"required"`
+	Messages          []any           `json:"messages" api:"required"`
+	Metadata          map[string]any  `json:"metadata" api:"required"`
+	Object            constant.Worker `json:"object" default:"worker"`
+	Output            []WorkerOutput  `json:"output" api:"required"`
+	OutputText        string          `json:"output_text" api:"required"`
+	Running           bool            `json:"running" api:"required"`
+	Sources           []WorkerSource  `json:"sources" api:"required"`
 	// Any of "running", "completed", "pending".
 	Status           WorkerStatus   `json:"status" api:"required"`
 	StructuredOutput map[string]any `json:"structured_output" api:"required"`
-	Usage            WorkerUsage    `json:"usage"`
+	// Web URL of the worker in the Handinger dashboard.
+	URL   string      `json:"url" api:"required"`
+	Usage WorkerUsage `json:"usage"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID                respjson.Field
@@ -149,6 +237,7 @@ type Worker struct {
 		Sources           respjson.Field
 		Status            respjson.Field
 		StructuredOutput  respjson.Field
+		URL               respjson.Field
 		Usage             respjson.Field
 		ExtraFields       map[string]respjson.Field
 		raw               string
@@ -181,21 +270,12 @@ func (r *WorkerFile) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerObject string
-
-const (
-	WorkerObjectWorker WorkerObject = "worker"
-)
-
 type WorkerOutput struct {
 	ID      string                `json:"id" api:"required"`
 	Content []WorkerOutputContent `json:"content" api:"required"`
-	// Any of "assistant".
-	Role string `json:"role" api:"required"`
-	// Any of "completed".
-	Status string `json:"status" api:"required"`
-	// Any of "message".
-	Type string `json:"type" api:"required"`
+	Role    constant.Assistant    `json:"role" default:"assistant"`
+	Status  constant.Completed    `json:"status" default:"completed"`
+	Type    constant.Message      `json:"type" default:"message"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field
@@ -215,9 +295,8 @@ func (r *WorkerOutput) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerOutputContent struct {
-	Text string `json:"text" api:"required"`
-	// Any of "output_text".
-	Type string `json:"type" api:"required"`
+	Text string              `json:"text" api:"required"`
+	Type constant.OutputText `json:"type" default:"output_text"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Text        respjson.Field
@@ -234,11 +313,10 @@ func (r *WorkerOutputContent) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerSource struct {
-	ID    string `json:"id" api:"required"`
-	Title string `json:"title" api:"required"`
-	// Any of "url".
-	Type string `json:"type" api:"required"`
-	URL  string `json:"url" api:"required"`
+	ID    string       `json:"id" api:"required"`
+	Title string       `json:"title" api:"required"`
+	Type  constant.URL `json:"type" default:"url"`
+	URL   string       `json:"url" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field
@@ -282,17 +360,20 @@ func (r *WorkerUsage) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerNewResponse struct {
+type WorkerTemplate struct {
 	ID             string         `json:"id" api:"required"`
 	CreatedAt      string         `json:"createdAt" api:"required"`
 	Instructions   string         `json:"instructions" api:"required"`
 	OrganizationID string         `json:"organizationId" api:"required"`
 	OutputSchema   map[string]any `json:"outputSchema" api:"required"`
+	Summary        string         `json:"summary" api:"required"`
 	Title          string         `json:"title" api:"required"`
 	UpdatedAt      string         `json:"updatedAt" api:"required"`
-	UserID         string         `json:"userId" api:"required"`
+	// Web URL of the worker in the Handinger dashboard.
+	URL    string `json:"url" api:"required"`
+	UserID string `json:"userId" api:"required"`
 	// Any of "public", "private".
-	Visibility WorkerNewResponseVisibility `json:"visibility" api:"required"`
+	Visibility WorkerTemplateVisibility `json:"visibility" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID             respjson.Field
@@ -300,8 +381,10 @@ type WorkerNewResponse struct {
 		Instructions   respjson.Field
 		OrganizationID respjson.Field
 		OutputSchema   respjson.Field
+		Summary        respjson.Field
 		Title          respjson.Field
 		UpdatedAt      respjson.Field
+		URL            respjson.Field
 		UserID         respjson.Field
 		Visibility     respjson.Field
 		ExtraFields    map[string]respjson.Field
@@ -310,16 +393,16 @@ type WorkerNewResponse struct {
 }
 
 // Returns the unmodified JSON received from the API
-func (r WorkerNewResponse) RawJSON() string { return r.JSON.raw }
-func (r *WorkerNewResponse) UnmarshalJSON(data []byte) error {
+func (r WorkerTemplate) RawJSON() string { return r.JSON.raw }
+func (r *WorkerTemplate) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerNewResponseVisibility string
+type WorkerTemplateVisibility string
 
 const (
-	WorkerNewResponseVisibilityPublic  WorkerNewResponseVisibility = "public"
-	WorkerNewResponseVisibilityPrivate WorkerNewResponseVisibility = "private"
+	WorkerTemplateVisibilityPublic  WorkerTemplateVisibility = "public"
+	WorkerTemplateVisibilityPrivate WorkerTemplateVisibility = "private"
 )
 
 type WorkerGetEmailResponse struct {
@@ -377,3 +460,15 @@ const (
 	WorkerGetParamsStreamTrue  WorkerGetParamsStream = "true"
 	WorkerGetParamsStreamFalse WorkerGetParamsStream = "false"
 )
+
+type WorkerUpdateParams struct {
+	UpdateWorker UpdateWorkerParam
+	paramObj
+}
+
+func (r WorkerUpdateParams) MarshalJSON() (data []byte, err error) {
+	return shimjson.Marshal(r.UpdateWorker)
+}
+func (r *WorkerUpdateParams) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}

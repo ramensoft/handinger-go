@@ -28,16 +28,11 @@ func TestTaskNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Instructions: handinger.String("instructions"),
-				OutputSchema: map[string]any{
-					"foo": "bar",
-				},
-				Prompt:     handinger.String("prompt"),
-				Title:      handinger.String("Brand voice analyzer"),
-				Visibility: handinger.CreateWorkerVisibilityPublic,
-			},
-			WorkerID: "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input:    "What's the weather today in Barcelona?",
+			Budget:   handinger.CreateTaskBudgetLow,
+			Stream:   handinger.Bool(true),
+			TaskID:   handinger.String("tsk_2Z-YWz3hFq6VlW"),
+			WorkerID: handinger.String("wrk_vk81XUHKHG-qr4"),
 		},
 	})
 	if err != nil {
@@ -63,6 +58,29 @@ func TestTaskGet(t *testing.T) {
 		option.WithAPIKey("My API Key"),
 	)
 	_, err := client.Tasks.Get(context.TODO(), "tsk_01HZY31W2SZJ8MJ2FQTR3M1K9D")
+	if err != nil {
+		var apierr *handinger.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestTaskDelete(t *testing.T) {
+	t.Skip("Mock server tests are disabled")
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := handinger.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My API Key"),
+	)
+	_, err := client.Tasks.Delete(context.TODO(), "tsk_01HZY31W2SZJ8MJ2FQTR3M1K9D")
 	if err != nil {
 		var apierr *handinger.Error
 		if errors.As(err, &apierr) {

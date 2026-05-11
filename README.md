@@ -6,7 +6,7 @@
 
 <!-- x-release-please-end -->
 
-The Handinger Go library provides convenient access to the Handinger REST API
+The Handinger Go library provides convenient access to the [Handinger REST API](https://docs.handinger.com)
 from applications written in Go.
 
 It is generated with [Stainless](https://www.stainless.com/).
@@ -58,8 +58,7 @@ func main() {
 	)
 	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input: "What's the weather today in Barcelona?",
 		},
 	})
 	if err != nil {
@@ -304,8 +303,7 @@ To handle errors, we recommend that you use the `errors.As` pattern:
 ```go
 _, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 	CreateTask: handinger.CreateTaskParam{
-		CreateWorkerParam: handinger.CreateWorkerParam{},
-		WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+		Input: "What's the weather today in Barcelona?",
 	},
 })
 if err != nil {
@@ -336,8 +334,7 @@ client.Tasks.New(
 	ctx,
 	handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	// This sets the per-retry timeout
@@ -377,8 +374,7 @@ client.Tasks.New(
 	context.TODO(),
 	handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	option.WithMaxRetries(5),
@@ -397,8 +393,7 @@ worker, err := client.Tasks.New(
 	context.TODO(),
 	handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{},
-			WorkerID:          "t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
+			Input: "What's the weather today in Barcelona?",
 		},
 	},
 	option.WithResponseInto(&response),
