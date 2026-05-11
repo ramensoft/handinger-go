@@ -32,6 +32,8 @@ type WorkerService struct {
 	options []option.RequestOption
 	// Manage future and recurring worker tasks.
 	Schedules WorkerScheduleService
+	// Configure outbound webhooks delivered when a worker's tasks complete.
+	Webhooks WorkerWebhookService
 }
 
 // NewWorkerService generates a new service that applies the given options to each
@@ -41,6 +43,7 @@ func NewWorkerService(opts ...option.RequestOption) (r WorkerService) {
 	r = WorkerService{}
 	r.options = opts
 	r.Schedules = NewWorkerScheduleService(opts...)
+	r.Webhooks = NewWorkerWebhookService(opts...)
 	return
 }
 
