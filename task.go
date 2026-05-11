@@ -77,7 +77,9 @@ func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.
 
 // The property Input is required.
 type CreateTaskParam struct {
-	Input  string          `json:"input" api:"required"`
+	Input string `json:"input" api:"required"`
+	// Stream the response as server-sent events instead of waiting for the final
+	// payload.
 	Stream param.Opt[bool] `json:"stream,omitzero"`
 	// Optional client-provided task id. Reuse this id to add turns to an existing
 	// task.
@@ -85,6 +87,9 @@ type CreateTaskParam struct {
 	// Worker id the task belongs to. If omitted, a new worker is created on-the-fly
 	// using the input as instructions.
 	WorkerID param.Opt[string] `json:"workerId,omitzero"`
+	// Compute budget the worker is allowed to spend on the task. Defaults to
+	// `standard`.
+	//
 	// Any of "low", "standard", "high", "unlimited".
 	Budget CreateTaskBudget `json:"budget,omitzero"`
 	paramObj
@@ -98,6 +103,8 @@ func (r *CreateTaskParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Compute budget the worker is allowed to spend on the task. Defaults to
+// `standard`.
 type CreateTaskBudget string
 
 const (
@@ -132,6 +139,7 @@ type Task struct {
 	// Any of "pending", "running", "completed", "error", "aborted".
 	Status TaskStatus `json:"status" api:"required"`
 	Title  string     `json:"title" api:"required"`
+	// Aggregate credit spend, elapsed wall-clock, and number of turns across the task.
 	Totals TaskTotals `json:"totals" api:"required"`
 	// Any of "api", "email", "schedule", "ui".
 	TriggeredBy TaskTriggeredBy `json:"triggeredBy" api:"required"`
@@ -172,10 +180,11 @@ const (
 	TaskStatusAborted   TaskStatus = "aborted"
 )
 
+// Aggregate credit spend, elapsed wall-clock, and number of turns across the task.
 type TaskTotals struct {
-	Credits    float64 `json:"credits" api:"required"`
-	DurationMs float64 `json:"durationMs" api:"required"`
-	TurnCount  float64 `json:"turnCount" api:"required"`
+	Credits    int64 `json:"credits" api:"required"`
+	DurationMs int64 `json:"durationMs" api:"required"`
+	TurnCount  int64 `json:"turnCount" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Credits     respjson.Field
@@ -220,18 +229,20 @@ func (r *TaskWithTurns) UnmarshalJSON(data []byte) error {
 }
 
 type TaskWithTurnsTurn struct {
-	ID               string         `json:"id" api:"required"`
-	CompletedAt      string         `json:"completedAt" api:"required"`
-	Credits          float64        `json:"credits" api:"required"`
-	DurationMs       int64          `json:"durationMs" api:"required"`
-	Input            string         `json:"input" api:"required"`
-	InputTokens      int64          `json:"inputTokens" api:"required"`
-	OutputText       string         `json:"outputText" api:"required"`
-	OutputTokens     int64          `json:"outputTokens" api:"required"`
-	Role             string         `json:"role" api:"required"`
-	Seq              int64          `json:"seq" api:"required"`
-	StartedAt        string         `json:"startedAt" api:"required"`
-	Status           string         `json:"status" api:"required"`
+	ID           string `json:"id" api:"required"`
+	CompletedAt  string `json:"completedAt" api:"required"`
+	Credits      int64  `json:"credits" api:"required"`
+	DurationMs   int64  `json:"durationMs" api:"required"`
+	Input        string `json:"input" api:"required"`
+	InputTokens  int64  `json:"inputTokens" api:"required"`
+	OutputText   string `json:"outputText" api:"required"`
+	OutputTokens int64  `json:"outputTokens" api:"required"`
+	Role         string `json:"role" api:"required"`
+	Seq          int64  `json:"seq" api:"required"`
+	StartedAt    string `json:"startedAt" api:"required"`
+	Status       string `json:"status" api:"required"`
+	// Structured JSON payload when the worker is configured with an output schema.
+	// `null` otherwise.
 	StructuredOutput map[string]any `json:"structuredOutput" api:"required"`
 	TaskID           string         `json:"taskId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
