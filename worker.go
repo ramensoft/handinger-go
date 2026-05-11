@@ -215,7 +215,9 @@ type Worker struct {
 	// Any of "running", "completed", "pending".
 	Status           WorkerStatus   `json:"status" api:"required"`
 	StructuredOutput map[string]any `json:"structured_output" api:"required"`
-	Usage            WorkerUsage    `json:"usage"`
+	// Web URL of the worker in the Handinger dashboard.
+	URL   string      `json:"url" api:"required"`
+	Usage WorkerUsage `json:"usage"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID                respjson.Field
@@ -232,6 +234,7 @@ type Worker struct {
 		Sources           respjson.Field
 		Status            respjson.Field
 		StructuredOutput  respjson.Field
+		URL               respjson.Field
 		Usage             respjson.Field
 		ExtraFields       map[string]respjson.Field
 		raw               string
@@ -374,7 +377,9 @@ type WorkerTemplate struct {
 	Summary        string         `json:"summary" api:"required"`
 	Title          string         `json:"title" api:"required"`
 	UpdatedAt      string         `json:"updatedAt" api:"required"`
-	UserID         string         `json:"userId" api:"required"`
+	// Web URL of the worker in the Handinger dashboard.
+	URL    string `json:"url" api:"required"`
+	UserID string `json:"userId" api:"required"`
 	// Any of "public", "private".
 	Visibility WorkerTemplateVisibility `json:"visibility" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
@@ -387,6 +392,7 @@ type WorkerTemplate struct {
 		Summary        respjson.Field
 		Title          respjson.Field
 		UpdatedAt      respjson.Field
+		URL            respjson.Field
 		UserID         respjson.Field
 		Visibility     respjson.Field
 		ExtraFields    map[string]respjson.Field

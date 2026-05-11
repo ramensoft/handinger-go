@@ -120,7 +120,9 @@ type Task struct {
 	Totals TaskTotals `json:"totals" api:"required"`
 	// Any of "api", "email", "schedule", "ui".
 	TriggeredBy TaskTriggeredBy `json:"triggeredBy" api:"required"`
-	WorkerID    string          `json:"workerId" api:"required"`
+	// Web URL of the task in the Handinger dashboard.
+	URL      string `json:"url" api:"required"`
+	WorkerID string `json:"workerId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID              respjson.Field
@@ -132,6 +134,7 @@ type Task struct {
 		Title           respjson.Field
 		Totals          respjson.Field
 		TriggeredBy     respjson.Field
+		URL             respjson.Field
 		WorkerID        respjson.Field
 		ExtraFields     map[string]respjson.Field
 		raw             string
