@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.2 (2026-05-11)
+
+Full Changelog: [v0.7.1...v0.7.2](https://github.com/ramensoft/handinger-go/compare/v0.7.1...v0.7.2)
+
+### Chores
+
+* configure new SDK language ([c18184b](https://github.com/ramensoft/handinger-go/commit/c18184b3ef68b1c307e1c9ad77f1492e743ed9a7))
+
 ## 0.7.1 (2026-05-11)
 
 Full Changelog: [v0.7.0...v0.7.1](https://github.com/ramensoft/handinger-go/compare/v0.7.0...v0.7.1)
