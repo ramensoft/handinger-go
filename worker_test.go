@@ -28,12 +28,14 @@ func TestWorkerNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Workers.New(context.TODO(), handinger.WorkerNewParams{
 		CreateWorker: handinger.CreateWorkerParam{
-			Instructions: handinger.String("instructions"),
+			Instructions: handinger.String("You are a brand voice analyzer. Read the input text and report whether it matches Acme's playful, plain-spoken house style. Quote specific phrases."),
 			OutputSchema: map[string]any{
-				"foo": "bar",
+				"type":       "bar",
+				"required":   "bar",
+				"properties": "bar",
 			},
-			Prompt:     handinger.String("prompt"),
-			Summary:    handinger.String("summary"),
+			Prompt:     handinger.String("A worker that fact-checks short claims and returns a verdict with citations."),
+			Summary:    handinger.String("Audits copy against the Acme brand voice guide."),
 			Title:      handinger.String("Brand voice analyzer"),
 			Visibility: handinger.CreateWorkerVisibilityPublic,
 		},
@@ -94,13 +96,15 @@ func TestWorkerUpdateWithOptionalParams(t *testing.T) {
 		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		handinger.WorkerUpdateParams{
 			UpdateWorker: handinger.UpdateWorkerParam{
-				Instructions: handinger.String("instructions"),
+				Instructions: handinger.String("You are a brand voice analyzer. Read the input text and report whether it matches Acme's playful, plain-spoken house style. Quote specific phrases."),
 				OutputSchema: map[string]any{
-					"foo": "bar",
+					"type":       "bar",
+					"required":   "bar",
+					"properties": "bar",
 				},
-				Summary:    handinger.String("summary"),
-				Title:      handinger.String("Brand voice analyzer"),
-				Visibility: handinger.UpdateWorkerVisibilityPublic,
+				Summary:    handinger.String("Audits copy against the Acme brand voice guide."),
+				Title:      handinger.String("Claim verdict v2"),
+				Visibility: handinger.UpdateWorkerVisibilityPrivate,
 			},
 		},
 	)
