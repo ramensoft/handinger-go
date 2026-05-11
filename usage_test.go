@@ -25,7 +25,11 @@ func TestUsage(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
 	)
-	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{})
+	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			Input: "What's the weather today in Barcelona?",
+		},
+	})
 	if err != nil {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

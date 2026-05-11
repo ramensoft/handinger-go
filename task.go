@@ -75,23 +75,37 @@ func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.
 	return res, err
 }
 
+// The property Input is required.
 type CreateTaskParam struct {
+	Input  string          `json:"input" api:"required"`
+	Stream param.Opt[bool] `json:"stream,omitzero"`
 	// Optional client-provided task id. Reuse this id to add turns to an existing
 	// task.
 	TaskID param.Opt[string] `json:"taskId,omitzero"`
 	// Worker id the task belongs to. If omitted, a new worker is created on-the-fly
 	// using the input as instructions.
 	WorkerID param.Opt[string] `json:"workerId,omitzero"`
-	CreateWorkerParam
+	// Any of "low", "standard", "high", "unlimited".
+	Budget CreateTaskBudget `json:"budget,omitzero"`
+	paramObj
 }
 
 func (r CreateTaskParam) MarshalJSON() (data []byte, err error) {
-	type shadow struct {
-		*CreateTaskParam
-		MarshalJSON bool `json:"-"` // Prevent inheriting [json.Marshaler] from the embedded field
-	}
-	return param.MarshalObject(r, shadow{&r, false})
+	type shadow CreateTaskParam
+	return param.MarshalObject(r, (*shadow)(&r))
 }
+func (r *CreateTaskParam) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CreateTaskBudget string
+
+const (
+	CreateTaskBudgetLow       CreateTaskBudget = "low"
+	CreateTaskBudgetStandard  CreateTaskBudget = "standard"
+	CreateTaskBudgetHigh      CreateTaskBudget = "high"
+	CreateTaskBudgetUnlimited CreateTaskBudget = "unlimited"
+)
 
 type DeleteTaskResponse struct {
 	Archived bool `json:"archived" api:"required"`

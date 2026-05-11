@@ -28,16 +28,9 @@ func TestTaskNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
 		CreateTask: handinger.CreateTaskParam{
-			CreateWorkerParam: handinger.CreateWorkerParam{
-				Instructions: handinger.String("instructions"),
-				OutputSchema: map[string]any{
-					"foo": "bar",
-				},
-				Prompt:     handinger.String("prompt"),
-				Summary:    handinger.String("summary"),
-				Title:      handinger.String("Brand voice analyzer"),
-				Visibility: handinger.CreateWorkerVisibilityPublic,
-			},
+			Input:    "What's the weather today in Barcelona?",
+			Budget:   handinger.CreateTaskBudgetLow,
+			Stream:   handinger.Bool(true),
 			TaskID:   handinger.String("tsk_2Z-YWz3hFq6VlW"),
 			WorkerID: handinger.String("wrk_vk81XUHKHG-qr4"),
 		},

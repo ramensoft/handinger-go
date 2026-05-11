@@ -56,7 +56,11 @@ func main() {
 	client := handinger.NewClient(
 		option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("HANDINGER_API_KEY")
 	)
-	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{})
+	worker, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			Input: "What's the weather today in Barcelona?",
+		},
+	})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -297,7 +301,11 @@ When the API returns a non-success status code, we return an error with type
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{})
+_, err := client.Tasks.New(context.TODO(), handinger.TaskNewParams{
+	CreateTask: handinger.CreateTaskParam{
+		Input: "What's the weather today in Barcelona?",
+	},
+})
 if err != nil {
 	var apierr *handinger.Error
 	if errors.As(err, &apierr) {
@@ -324,7 +332,11 @@ ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
 client.Tasks.New(
 	ctx,
-	handinger.TaskNewParams{},
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			Input: "What's the weather today in Barcelona?",
+		},
+	},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
 )
@@ -360,7 +372,11 @@ client := handinger.NewClient(
 // Override per-request:
 client.Tasks.New(
 	context.TODO(),
-	handinger.TaskNewParams{},
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			Input: "What's the weather today in Barcelona?",
+		},
+	},
 	option.WithMaxRetries(5),
 )
 ```
@@ -375,7 +391,11 @@ you need to examine response headers, status codes, or other details.
 var response *http.Response
 worker, err := client.Tasks.New(
 	context.TODO(),
-	handinger.TaskNewParams{},
+	handinger.TaskNewParams{
+		CreateTask: handinger.CreateTaskParam{
+			Input: "What's the weather today in Barcelona?",
+		},
+	},
 	option.WithResponseInto(&response),
 )
 if err != nil {
