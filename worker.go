@@ -10,14 +10,14 @@ import (
 	"net/url"
 	"slices"
 
-	"github.com/Ramensoft/handinger-go/internal/apijson"
-	"github.com/Ramensoft/handinger-go/internal/apiquery"
-	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
-	"github.com/Ramensoft/handinger-go/internal/requestconfig"
-	"github.com/Ramensoft/handinger-go/option"
-	"github.com/Ramensoft/handinger-go/packages/param"
-	"github.com/Ramensoft/handinger-go/packages/respjson"
-	"github.com/Ramensoft/handinger-go/shared/constant"
+	"github.com/ramensoft/handinger-go/internal/apijson"
+	"github.com/ramensoft/handinger-go/internal/apiquery"
+	shimjson "github.com/ramensoft/handinger-go/internal/encoding/json"
+	"github.com/ramensoft/handinger-go/internal/requestconfig"
+	"github.com/ramensoft/handinger-go/option"
+	"github.com/ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/packages/respjson"
+	"github.com/ramensoft/handinger-go/shared/constant"
 )
 
 // Create, retrieve, and manage agent worker templates.

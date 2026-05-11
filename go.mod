@@ -1,4 +1,4 @@
-module github.com/Ramensoft/handinger-go
+module github.com/ramensoft/handinger-go
 
 go 1.22
 

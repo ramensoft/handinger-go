@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/Ramensoft/handinger-go/internal/apijson"
-	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/ramensoft/handinger-go/internal/apijson"
+	"github.com/ramensoft/handinger-go/packages/respjson"
 )
 
 // Error represents an error that originates from the API, i.e. when a request is

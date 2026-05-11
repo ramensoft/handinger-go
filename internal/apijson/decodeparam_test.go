@@ -3,8 +3,8 @@ package apijson_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Ramensoft/handinger-go/internal/apijson"
-	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/internal/apijson"
+	"github.com/ramensoft/handinger-go/packages/param"
 	"reflect"
 	"testing"
 )

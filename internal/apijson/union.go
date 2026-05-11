@@ -2,7 +2,7 @@ package apijson
 
 import (
 	"errors"
-	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/packages/param"
 	"reflect"
 
 	"github.com/tidwall/gjson"

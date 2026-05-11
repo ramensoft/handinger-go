@@ -1,7 +1,7 @@
 package sentinel
 
 import (
-	"github.com/Ramensoft/handinger-go/internal/encoding/json/shims"
+	"github.com/ramensoft/handinger-go/internal/encoding/json/shims"
 	"reflect"
 	"sync"
 )
