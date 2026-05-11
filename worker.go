@@ -17,6 +17,7 @@ import (
 	"github.com/Ramensoft/handinger-go/option"
 	"github.com/Ramensoft/handinger-go/packages/param"
 	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/Ramensoft/handinger-go/shared/constant"
 )
 
 // Create, retrieve, and manage agent worker templates.
@@ -199,19 +200,18 @@ const (
 )
 
 type Worker struct {
-	ID                string         `json:"id" api:"required"`
-	CreatedAt         int64          `json:"created_at" api:"required"`
-	Error             any            `json:"error" api:"required"`
-	Files             []WorkerFile   `json:"files" api:"required"`
-	IncompleteDetails any            `json:"incomplete_details" api:"required"`
-	Messages          []any          `json:"messages" api:"required"`
-	Metadata          map[string]any `json:"metadata" api:"required"`
-	// Any of "worker".
-	Object     WorkerObject   `json:"object" api:"required"`
-	Output     []WorkerOutput `json:"output" api:"required"`
-	OutputText string         `json:"output_text" api:"required"`
-	Running    bool           `json:"running" api:"required"`
-	Sources    []WorkerSource `json:"sources" api:"required"`
+	ID                string          `json:"id" api:"required"`
+	CreatedAt         int64           `json:"created_at" api:"required"`
+	Error             any             `json:"error" api:"required"`
+	Files             []WorkerFile    `json:"files" api:"required"`
+	IncompleteDetails any             `json:"incomplete_details" api:"required"`
+	Messages          []any           `json:"messages" api:"required"`
+	Metadata          map[string]any  `json:"metadata" api:"required"`
+	Object            constant.Worker `json:"object" default:"worker"`
+	Output            []WorkerOutput  `json:"output" api:"required"`
+	OutputText        string          `json:"output_text" api:"required"`
+	Running           bool            `json:"running" api:"required"`
+	Sources           []WorkerSource  `json:"sources" api:"required"`
 	// Any of "running", "completed", "pending".
 	Status           WorkerStatus   `json:"status" api:"required"`
 	StructuredOutput map[string]any `json:"structured_output" api:"required"`
@@ -267,21 +267,12 @@ func (r *WorkerFile) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type WorkerObject string
-
-const (
-	WorkerObjectWorker WorkerObject = "worker"
-)
-
 type WorkerOutput struct {
 	ID      string                `json:"id" api:"required"`
 	Content []WorkerOutputContent `json:"content" api:"required"`
-	// Any of "assistant".
-	Role string `json:"role" api:"required"`
-	// Any of "completed".
-	Status string `json:"status" api:"required"`
-	// Any of "message".
-	Type string `json:"type" api:"required"`
+	Role    constant.Assistant    `json:"role" default:"assistant"`
+	Status  constant.Completed    `json:"status" default:"completed"`
+	Type    constant.Message      `json:"type" default:"message"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field
@@ -301,9 +292,8 @@ func (r *WorkerOutput) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerOutputContent struct {
-	Text string `json:"text" api:"required"`
-	// Any of "output_text".
-	Type string `json:"type" api:"required"`
+	Text string              `json:"text" api:"required"`
+	Type constant.OutputText `json:"type" default:"output_text"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Text        respjson.Field
@@ -320,11 +310,10 @@ func (r *WorkerOutputContent) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerSource struct {
-	ID    string `json:"id" api:"required"`
-	Title string `json:"title" api:"required"`
-	// Any of "url".
-	Type string `json:"type" api:"required"`
-	URL  string `json:"url" api:"required"`
+	ID    string       `json:"id" api:"required"`
+	Title string       `json:"title" api:"required"`
+	Type  constant.URL `json:"type" default:"url"`
+	URL   string       `json:"url" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field
