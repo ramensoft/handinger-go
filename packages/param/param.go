@@ -2,7 +2,7 @@ package param
 
 import (
 	"encoding/json"
-	"github.com/Ramensoft/handinger-go/internal/encoding/json/sentinel"
+	"github.com/ramensoft/handinger-go/internal/encoding/json/sentinel"
 	"reflect"
 )
 

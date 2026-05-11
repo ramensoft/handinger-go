@@ -1,7 +1,7 @@
 package apijson
 
 import (
-	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/ramensoft/handinger-go/packages/respjson"
 	"reflect"
 )
 

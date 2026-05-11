@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Ramensoft/handinger-go"
-	"github.com/Ramensoft/handinger-go/internal/testutil"
-	"github.com/Ramensoft/handinger-go/option"
+	"github.com/ramensoft/handinger-go"
+	"github.com/ramensoft/handinger-go/internal/testutil"
+	"github.com/ramensoft/handinger-go/option"
 )
 
 func TestWorkerNewWithOptionalParams(t *testing.T) {

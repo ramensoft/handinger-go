@@ -3,8 +3,8 @@
 package handinger
 
 import (
-	"github.com/Ramensoft/handinger-go/internal/apierror"
-	"github.com/Ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/internal/apierror"
+	"github.com/ramensoft/handinger-go/packages/param"
 )
 
 // aliased to make [param.APIUnion] private when embedding

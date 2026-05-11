@@ -9,8 +9,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Ramensoft/handinger-go/internal/requestconfig"
-	"github.com/Ramensoft/handinger-go/option"
+	"github.com/ramensoft/handinger-go/internal/requestconfig"
+	"github.com/ramensoft/handinger-go/option"
 )
 
 // Client creates a struct with services and top level methods that help with

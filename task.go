@@ -10,12 +10,12 @@ import (
 	"net/url"
 	"slices"
 
-	"github.com/Ramensoft/handinger-go/internal/apijson"
-	shimjson "github.com/Ramensoft/handinger-go/internal/encoding/json"
-	"github.com/Ramensoft/handinger-go/internal/requestconfig"
-	"github.com/Ramensoft/handinger-go/option"
-	"github.com/Ramensoft/handinger-go/packages/param"
-	"github.com/Ramensoft/handinger-go/packages/respjson"
+	"github.com/ramensoft/handinger-go/internal/apijson"
+	shimjson "github.com/ramensoft/handinger-go/internal/encoding/json"
+	"github.com/ramensoft/handinger-go/internal/requestconfig"
+	"github.com/ramensoft/handinger-go/option"
+	"github.com/ramensoft/handinger-go/packages/param"
+	"github.com/ramensoft/handinger-go/packages/respjson"
 )
 
 // Run and inspect tasks against a worker.
