@@ -7,7 +7,6 @@ import (
 	"errors"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/ramensoft/handinger-go"
 	"github.com/ramensoft/handinger-go/internal/testutil"
@@ -34,7 +33,7 @@ func TestWorkerScheduleNewWithOptionalParams(t *testing.T) {
 			Input: "x",
 			When: handinger.WorkerScheduleNewParamsWhenUnion{
 				OfScheduled: &handinger.WorkerScheduleNewParamsWhenScheduled{
-					Date: time.Now(),
+					Date: "x",
 				},
 			},
 			Budget: handinger.WorkerScheduleNewParamsBudgetLow,

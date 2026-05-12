@@ -362,7 +362,7 @@ func init() {
 
 // The properties Date, Type are required.
 type WorkerScheduleNewParamsWhenScheduled struct {
-	Date time.Time `json:"date" api:"required" format:"date-time"`
+	Date string `json:"date" api:"required"`
 	// This field can be elided, and will marshal its zero value as "scheduled".
 	Type constant.Scheduled `json:"type" default:"scheduled"`
 	paramObj
