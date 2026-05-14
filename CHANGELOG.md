@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 (2026-05-14)
+
+Full Changelog: [v0.9.0...v0.10.0](https://github.com/ramensoft/handinger-go/compare/v0.9.0...v0.10.0)
+
+### Features
+
+* **client:** optimize json encoder for internal types ([39c1d73](https://github.com/ramensoft/handinger-go/commit/39c1d737449a925ccc56e2ac799f3e7d869fdf76))
+
 ## 0.9.0 (2026-05-12)
 
 Full Changelog: [v0.8.0...v0.9.0](https://github.com/ramensoft/handinger-go/compare/v0.8.0...v0.9.0)
