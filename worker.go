@@ -254,11 +254,13 @@ type WorkerFile struct {
 	Filename  string `json:"filename" api:"required"`
 	MediaType string `json:"mediaType" api:"required"`
 	URL       string `json:"url" api:"required"`
+	Size      int64  `json:"size"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Filename    respjson.Field
 		MediaType   respjson.Field
 		URL         respjson.Field
+		Size        respjson.Field
 		ExtraFields map[string]respjson.Field
 		raw         string
 	} `json:"-"`
