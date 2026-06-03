@@ -56,9 +56,8 @@ func (r *WorkerService) New(ctx context.Context, body WorkerNewParams, opts ...o
 	return res, err
 }
 
-// Retrieve the current worker state and messages from its most recent task.
-// Returns a JSON worker object by default, or a server-sent event stream when
-// `stream=true`.
+// Retrieve the current worker state and messages from its most recent task (or a
+// specific task via `taskId`).
 func (r *WorkerService) Get(ctx context.Context, workerID string, query WorkerGetParams, opts ...option.RequestOption) (res *Worker, err error) {
 	opts = slices.Concat(r.options, opts)
 	if workerID == "" {
@@ -436,12 +435,9 @@ func (r *WorkerNewParams) UnmarshalJSON(data []byte) error {
 }
 
 type WorkerGetParams struct {
-	// Set to "true" to receive a server-sent event stream that replays all stored
-	// messages and then continues with live chunks from the active task (if any)
-	// before closing.
-	//
-	// Any of "true", "false".
-	Stream WorkerGetParamsStream `query:"stream,omitzero" json:"-"`
+	// Return the worker state and messages for a specific task instead of the most
+	// recent one.
+	TaskID param.Opt[string] `query:"taskId,omitzero" json:"-"`
 	paramObj
 }
 
@@ -452,16 +448,6 @@ func (r WorkerGetParams) URLQuery() (v url.Values, err error) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
-
-// Set to "true" to receive a server-sent event stream that replays all stored
-// messages and then continues with live chunks from the active task (if any)
-// before closing.
-type WorkerGetParamsStream string
-
-const (
-	WorkerGetParamsStreamTrue  WorkerGetParamsStream = "true"
-	WorkerGetParamsStreamFalse WorkerGetParamsStream = "false"
-)
 
 type WorkerUpdateParams struct {
 	UpdateWorker UpdateWorkerParam
