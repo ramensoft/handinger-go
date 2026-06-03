@@ -66,7 +66,7 @@ func TestWorkerGetWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"t_org_123_w_01HZY2ZJQ8G7K42W2D7WF6V4GM",
 		handinger.WorkerGetParams{
-			Stream: handinger.WorkerGetParamsStreamTrue,
+			TaskID: handinger.String("x"),
 		},
 	)
 	if err != nil {

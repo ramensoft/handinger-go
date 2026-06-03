@@ -30,7 +30,6 @@ func TestTaskNewWithOptionalParams(t *testing.T) {
 		CreateTask: handinger.CreateTaskParam{
 			Input:    "What's the weather today in Barcelona?",
 			Budget:   handinger.CreateTaskBudgetStandard,
-			Stream:   handinger.Bool(false),
 			TaskID:   handinger.String("tsk_2Z-YWz3hFq6VlW"),
 			WorkerID: handinger.String("wrk_vk81XUHKHG-qr4"),
 		},
