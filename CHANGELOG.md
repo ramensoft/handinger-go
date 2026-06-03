@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 (2026-06-03)
+
+Full Changelog: [v0.11.0...v0.12.0](https://github.com/ramensoft/handinger-go/compare/v0.11.0...v0.12.0)
+
+### Features
+
+* Refactor task chat to use WebSocket agent connection ([15617ec](https://github.com/ramensoft/handinger-go/commit/15617ec636e627bb0237094a55085b1c861004ea))
+
 ## 0.11.0 (2026-05-15)
 
 Full Changelog: [v0.10.0...v0.11.0](https://github.com/ramensoft/handinger-go/compare/v0.10.0...v0.11.0)
