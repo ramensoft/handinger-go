@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 (2026-06-23)
+
+Full Changelog: [v0.12.0...v0.13.0](https://github.com/ramensoft/handinger-go/compare/v0.12.0...v0.13.0)
+
+### Features
+
+* **api:** add files field and file type to task turns ([5a6be57](https://github.com/ramensoft/handinger-go/commit/5a6be57d4864a42516948d6c13cddef714706d47))
+
 ## 0.12.0 (2026-06-03)
 
 Full Changelog: [v0.11.0...v0.12.0](https://github.com/ramensoft/handinger-go/compare/v0.11.0...v0.12.0)
