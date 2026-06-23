@@ -228,18 +228,20 @@ func (r *TaskWithTurns) UnmarshalJSON(data []byte) error {
 }
 
 type TaskWithTurnsTurn struct {
-	ID           string `json:"id" api:"required"`
-	CompletedAt  string `json:"completedAt" api:"required"`
-	Credits      int64  `json:"credits" api:"required"`
-	DurationMs   int64  `json:"durationMs" api:"required"`
-	Input        string `json:"input" api:"required"`
-	InputTokens  int64  `json:"inputTokens" api:"required"`
-	OutputText   string `json:"outputText" api:"required"`
-	OutputTokens int64  `json:"outputTokens" api:"required"`
-	Role         string `json:"role" api:"required"`
-	Seq          int64  `json:"seq" api:"required"`
-	StartedAt    string `json:"startedAt" api:"required"`
-	Status       string `json:"status" api:"required"`
+	ID          string `json:"id" api:"required"`
+	CompletedAt string `json:"completedAt" api:"required"`
+	Credits     int64  `json:"credits" api:"required"`
+	DurationMs  int64  `json:"durationMs" api:"required"`
+	// Files published by this turn.
+	Files        []TaskWithTurnsTurnFile `json:"files" api:"required"`
+	Input        string                  `json:"input" api:"required"`
+	InputTokens  int64                   `json:"inputTokens" api:"required"`
+	OutputText   string                  `json:"outputText" api:"required"`
+	OutputTokens int64                   `json:"outputTokens" api:"required"`
+	Role         string                  `json:"role" api:"required"`
+	Seq          int64                   `json:"seq" api:"required"`
+	StartedAt    string                  `json:"startedAt" api:"required"`
+	Status       string                  `json:"status" api:"required"`
 	// Structured JSON payload when the worker is configured with an output schema.
 	// `null` otherwise.
 	StructuredOutput map[string]any `json:"structuredOutput" api:"required"`
@@ -250,6 +252,7 @@ type TaskWithTurnsTurn struct {
 		CompletedAt      respjson.Field
 		Credits          respjson.Field
 		DurationMs       respjson.Field
+		Files            respjson.Field
 		Input            respjson.Field
 		InputTokens      respjson.Field
 		OutputText       respjson.Field
@@ -268,6 +271,28 @@ type TaskWithTurnsTurn struct {
 // Returns the unmodified JSON received from the API
 func (r TaskWithTurnsTurn) RawJSON() string { return r.JSON.raw }
 func (r *TaskWithTurnsTurn) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskWithTurnsTurnFile struct {
+	Filename  string `json:"filename" api:"required"`
+	MediaType string `json:"mediaType" api:"required"`
+	URL       string `json:"url" api:"required"`
+	Size      int64  `json:"size"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Filename    respjson.Field
+		MediaType   respjson.Field
+		URL         respjson.Field
+		Size        respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r TaskWithTurnsTurnFile) RawJSON() string { return r.JSON.raw }
+func (r *TaskWithTurnsTurnFile) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
