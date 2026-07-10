@@ -284,10 +284,12 @@ func (r *WorkerScheduleInterval) UnmarshalJSON(data []byte) error {
 
 type WorkerScheduleListResponse struct {
 	Schedules []WorkerScheduleUnion `json:"schedules" api:"required"`
+	Timezone  string                `json:"timezone" api:"required"`
 	WorkerID  string                `json:"workerId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Schedules   respjson.Field
+		Timezone    respjson.Field
 		WorkerID    respjson.Field
 		ExtraFields map[string]respjson.Field
 		raw         string
