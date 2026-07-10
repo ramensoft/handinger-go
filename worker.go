@@ -344,11 +344,9 @@ const (
 )
 
 type WorkerUsage struct {
-	Credits    int64 `json:"credits"`
 	DurationMs int64 `json:"durationMs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
-		Credits     respjson.Field
 		DurationMs  respjson.Field
 		ExtraFields map[string]respjson.Field
 		raw         string
