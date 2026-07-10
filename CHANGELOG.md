@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.14.0 (2026-07-10)
+
+Full Changelog: [v0.13.0...v0.14.0](https://github.com/ramensoft/handinger-go/compare/v0.13.0...v0.14.0)
+
+### Features
+
+* **api:** remove credits field from worker usage ([e7afef3](https://github.com/ramensoft/handinger-go/commit/e7afef3b1595d3e4b610469aa9cd5d813c5164d9))
+
 ## 0.13.0 (2026-06-23)
 
 Full Changelog: [v0.12.0...v0.13.0](https://github.com/ramensoft/handinger-go/compare/v0.12.0...v0.13.0)
