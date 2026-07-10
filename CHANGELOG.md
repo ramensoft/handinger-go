@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.0 (2026-07-10)
+
+Full Changelog: [v0.14.0...v0.15.0](https://github.com/ramensoft/handinger-go/compare/v0.14.0...v0.15.0)
+
+### Features
+
+* **api:** add timezone to worker schedule list response ([aea85e4](https://github.com/ramensoft/handinger-go/commit/aea85e41ac6d532f5f81bfa44c430fb3d4af3569))
+
 ## 0.14.0 (2026-07-10)
 
 Full Changelog: [v0.13.0...v0.14.0](https://github.com/ramensoft/handinger-go/compare/v0.13.0...v0.14.0)
