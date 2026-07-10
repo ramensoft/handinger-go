@@ -52,8 +52,8 @@ func (r *TaskService) New(ctx context.Context, body TaskNewParams, opts ...optio
 	return res, err
 }
 
-// Retrieve a single task and its individual turns.
-func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.RequestOption) (res *TaskWithTurns, err error) {
+// Retrieve a single task.
+func (r *TaskService) Get(ctx context.Context, taskID string, opts ...option.RequestOption) (res *TaskGetResponse, err error) {
 	opts = slices.Concat(r.options, opts)
 	if taskID == "" {
 		err = errors.New("missing required taskId parameter")
@@ -74,6 +74,18 @@ func (r *TaskService) Delete(ctx context.Context, taskID string, opts ...option.
 	}
 	path := fmt.Sprintf("api/tasks/%s", url.PathEscape(taskID))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
+	return res, err
+}
+
+// List the individual turns for a task in execution order.
+func (r *TaskService) ListTurns(ctx context.Context, taskID string, opts ...option.RequestOption) (res *TaskTurnList, err error) {
+	opts = slices.Concat(r.options, opts)
+	if taskID == "" {
+		err = errors.New("missing required taskId parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("api/tasks/%s/turns", url.PathEscape(taskID))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return res, err
 }
 
@@ -209,39 +221,39 @@ const (
 	TaskTriggeredByUi       TaskTriggeredBy = "ui"
 )
 
-type TaskWithTurns struct {
-	Task  Task                `json:"task" api:"required"`
-	Turns []TaskWithTurnsTurn `json:"turns" api:"required"`
+type TaskTurnList struct {
+	Items  []Turn `json:"items" api:"required"`
+	TaskID string `json:"taskId" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
-		Task        respjson.Field
-		Turns       respjson.Field
+		Items       respjson.Field
+		TaskID      respjson.Field
 		ExtraFields map[string]respjson.Field
 		raw         string
 	} `json:"-"`
 }
 
 // Returns the unmodified JSON received from the API
-func (r TaskWithTurns) RawJSON() string { return r.JSON.raw }
-func (r *TaskWithTurns) UnmarshalJSON(data []byte) error {
+func (r TaskTurnList) RawJSON() string { return r.JSON.raw }
+func (r *TaskTurnList) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type TaskWithTurnsTurn struct {
+type Turn struct {
 	ID          string `json:"id" api:"required"`
 	CompletedAt string `json:"completedAt" api:"required"`
 	Credits     int64  `json:"credits" api:"required"`
 	DurationMs  int64  `json:"durationMs" api:"required"`
 	// Files published by this turn.
-	Files        []TaskWithTurnsTurnFile `json:"files" api:"required"`
-	Input        string                  `json:"input" api:"required"`
-	InputTokens  int64                   `json:"inputTokens" api:"required"`
-	OutputText   string                  `json:"outputText" api:"required"`
-	OutputTokens int64                   `json:"outputTokens" api:"required"`
-	Role         string                  `json:"role" api:"required"`
-	Seq          int64                   `json:"seq" api:"required"`
-	StartedAt    string                  `json:"startedAt" api:"required"`
-	Status       string                  `json:"status" api:"required"`
+	Files        []TurnFile `json:"files" api:"required"`
+	Input        string     `json:"input" api:"required"`
+	InputTokens  int64      `json:"inputTokens" api:"required"`
+	OutputText   string     `json:"outputText" api:"required"`
+	OutputTokens int64      `json:"outputTokens" api:"required"`
+	Role         string     `json:"role" api:"required"`
+	Seq          int64      `json:"seq" api:"required"`
+	StartedAt    string     `json:"startedAt" api:"required"`
+	Status       string     `json:"status" api:"required"`
 	// Structured JSON payload when the worker is configured with an output schema.
 	// `null` otherwise.
 	StructuredOutput map[string]any `json:"structuredOutput" api:"required"`
@@ -269,12 +281,12 @@ type TaskWithTurnsTurn struct {
 }
 
 // Returns the unmodified JSON received from the API
-func (r TaskWithTurnsTurn) RawJSON() string { return r.JSON.raw }
-func (r *TaskWithTurnsTurn) UnmarshalJSON(data []byte) error {
+func (r Turn) RawJSON() string { return r.JSON.raw }
+func (r *Turn) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type TaskWithTurnsTurnFile struct {
+type TurnFile struct {
 	Filename  string `json:"filename" api:"required"`
 	MediaType string `json:"mediaType" api:"required"`
 	URL       string `json:"url" api:"required"`
@@ -291,8 +303,24 @@ type TaskWithTurnsTurnFile struct {
 }
 
 // Returns the unmodified JSON received from the API
-func (r TaskWithTurnsTurnFile) RawJSON() string { return r.JSON.raw }
-func (r *TaskWithTurnsTurnFile) UnmarshalJSON(data []byte) error {
+func (r TurnFile) RawJSON() string { return r.JSON.raw }
+func (r *TurnFile) UnmarshalJSON(data []byte) error {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TaskGetResponse struct {
+	Task Task `json:"task" api:"required"`
+	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
+	JSON struct {
+		Task        respjson.Field
+		ExtraFields map[string]respjson.Field
+		raw         string
+	} `json:"-"`
+}
+
+// Returns the unmodified JSON received from the API
+func (r TaskGetResponse) RawJSON() string { return r.JSON.raw }
+func (r *TaskGetResponse) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
 
