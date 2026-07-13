@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.1 (2026-07-13)
+
+Full Changelog: [v0.15.0...v0.15.1](https://github.com/ramensoft/handinger-go/compare/v0.15.0...v0.15.1)
+
+### Bug Fixes
+
+* **types:** add URI format to URL field in TurnFile and WorkerFile ([3124d83](https://github.com/ramensoft/handinger-go/commit/3124d832fdba06cfe279449702344751c6a73285))
+
 ## 0.15.0 (2026-07-10)
 
 Full Changelog: [v0.14.0...v0.15.0](https://github.com/ramensoft/handinger-go/compare/v0.14.0...v0.15.0)
