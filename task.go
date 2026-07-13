@@ -289,7 +289,7 @@ func (r *Turn) UnmarshalJSON(data []byte) error {
 type TurnFile struct {
 	Filename  string `json:"filename" api:"required"`
 	MediaType string `json:"mediaType" api:"required"`
-	URL       string `json:"url" api:"required"`
+	URL       string `json:"url" api:"required" format:"uri"`
 	Size      int64  `json:"size"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
