@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.0 (2026-07-18)
+
+Full Changelog: [v0.15.1...v0.16.0](https://github.com/ramensoft/handinger-go/compare/v0.15.1...v0.16.0)
+
+### Features
+
+* **stlc:** configurable CI runner and private-production-repo support in workflow templates ([0713040](https://github.com/ramensoft/handinger-go/commit/071304050cf7e064116fefc69a2910efed4275c4))
+
 ## 0.15.1 (2026-07-13)
 
 Full Changelog: [v0.15.0...v0.15.1](https://github.com/ramensoft/handinger-go/compare/v0.15.0...v0.15.1)
